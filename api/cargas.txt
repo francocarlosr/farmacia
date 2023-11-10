@@ -1,0 +1,48 @@
+-- Carga de productos
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('ibuprofeno', '1234', '50', '10');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('paracetamol', '4321', '30', '10');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('aspirina', '3333', '10', '10');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('alikal', '7777', '70', '15');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('alcohol', '7894', '23', '20');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('algodon', '4567', '25', '13');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('vitamina c', '1259', '30', '12');
+INSERT INTO `farmacia`.`producto` (`nombre`, `codigo`, `precio`, `stock`) VALUES ('isopos', '7532', '19', '22');
+
+-- Carga de compras
+INSERT INTO `farmacia`.`compra` (`fecha`, `proveedor`) VALUES ('2023-11-05', 'coto');
+INSERT INTO `farmacia`.`compra` (`fecha`, `proveedor`) VALUES ('2023-11-01', 'dia');
+INSERT INTO `farmacia`.`compra` (`fecha`, `proveedor`) VALUES ('2023-10-06', 'carrefour');
+INSERT INTO `farmacia`.`compra` (`fecha`, `proveedor`) VALUES ('2023-09-25', 'mayor');
+
+-- Carga de lotes
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l1234', '2023-12-05', '3', '1');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l5678', '2024-02-10', '5', '2');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l9876', '2024-01-15', '2', '3');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l4321', '2024-03-20', '7', '4');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l5555', '2023-11-30', '4', '5');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l9999', '2024-04-25', '6', '6');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l1111', '2023-12-18', '8', '7');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l2222', '2024-01-05', '4', '1');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l3333', '2024-02-20', '3', '2');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l4444', '2023-11-15', '5', '3');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l6666', '2024-03-10', '2', '4');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l7777', '2024-04-30', '9', '5');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l8888', '2023-12-01', '7', '6');
+INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`) VALUES ('l1245', '2024-01-08', '6', '7');
+
+
+#detalle de compra
+
+INSERT INTO `farmacia`.`detallecompra` (`cantidad`, `precio`, `producto_id`, `venta_id`)
+VALUES
+  ('2', '8', '2', '1'),
+  ('2', '10', '1', '1'),
+  ('3', '8', '2', '4'),
+  ('4', '12', '3', '1'),
+  ('2', '7', '4', '4'),
+  ('3', '9', '5', '1'),
+  ('5', '15', '6', '4'),
+  ('4', '11', '7', '1'),
+  ('3', '10', '8', '4'),
+  ('2', '10', '1', '1'),
+  ('4', '8', '2', '4');
