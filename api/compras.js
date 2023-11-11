@@ -28,12 +28,12 @@ export const comprasRouter = express
 
   
   .post("/", async (req, res) => {
-    const nuevaCompra = req.body.turno;
+    const nuevaCompra = req.body;
     const [rows] = await db.execute(
       "insert into compra (fecha, proveedor) values (:fecha, :proveedor)",
       {
         fecha: nuevaCompra.fecha,
-        proveedor: nuevaCompra.proveedor,
+        proveedor: nuevaCompra.proveedor
       }
     );
     res.status(201).send({ mensaje: "Compra Creada" });
