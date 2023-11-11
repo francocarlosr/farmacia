@@ -1,2 +1,6 @@
-node_modules
 .env
+materias.js
+cuenta.js
+personas.js
+tareas.js
+node_modules
