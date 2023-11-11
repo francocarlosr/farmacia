@@ -28,9 +28,9 @@ export const comprasRouter = express
 
   
   .post("/", async (req, res) => {
-    const nuevaCompra = req.body;
+    const nuevaCompra = req.body.nuevaCompra;
     const [rows] = await db.execute(
-      "insert into compra (fecha, proveedor) values (:fecha, :proveedor)",
+      "INSERT INTO compra (fecha, proveedor) VALUES (:fecha, :proveedor)",
       {
         fecha: nuevaCompra.fecha,
         proveedor: nuevaCompra.proveedor
@@ -38,6 +38,8 @@ export const comprasRouter = express
     );
     res.status(201).send({ mensaje: "Compra Creada" });
   })
+
+
 
   .post("/detallecompra", async (req, res) => {
     const nuevoDetallecompra = req.body.turno;
