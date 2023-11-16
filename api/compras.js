@@ -65,19 +65,27 @@ export const comprasRouter = express
 
 // Agregar nuevo detalle de compra
   .post("/detallecompra", async (req, res) => {
-    const nuevoDetalle = req.body.turno;
+    const nuevoDetalle = req.body.nuevoDetalle;
     const [rows] = await db.execute(
-      "insert into detallecompra (cantidad, precio, producto_id, compra_id) values (:cantidad, :precio, :producto_id, :compra_id)",
+      "INSERT INTO detallecompra (cantidad, precio, producto_id, compra_id) VALUES (:cantidad, :precio, :producto_id, :compra_id)",
       {
         cantidad: nuevoDetalle.cantidad,
         precio: nuevoDetalle.precio,
-        producto_id:nuevoDetalle.producto_id,
-        compra_id:nuevoDetalle.compra_id
-      },
-      "UPDATE productos SET stock=stock+cantidad WHERE id=id_producto"
+        producto_id: nuevoDetalle.producto_id,
+        compra_id: nuevoDetalle.compra_id
+      }
     );
-    res.status(201).send({ mensaje: "Detalle Creado" });
-  })
+
+  await db.execute(
+    "UPDATE producto SET stock = stock + :cantidad WHERE id = :producto_id",
+    {
+      cantidad: nuevoDetalle.cantidad,
+      producto_id: nuevoDetalle.producto_id
+    }
+  );
+
+  res.status(201).send({ mensaje: "Detalle Creado" });
+})
 
 
   
