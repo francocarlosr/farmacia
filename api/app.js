@@ -2,10 +2,10 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
-import { comprasRouter } from "./compras.js";
-import { ventasRouter } from "./ventas.js";
-import { productoRouter } from "./producto.js";
-import { empleadoRouter } from "./empleado.js";
+import { comprasRouter } from "./src/rutas/compras.js";
+import { ventasRouter } from "./src/rutas/ventas.js";
+import { productoRouter } from "./src/rutas/producto.js";
+import { empleadoRouter } from "./src/rutas/empleado.js";
 
 // Creo aplicacion express
 const app = express();

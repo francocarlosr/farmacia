@@ -1,5 +1,5 @@
 // Importa las dependencias necesarias
-import { db } from "./db.js";
+import { db } from "../db/db.js";
 
 // Función para obtener todos los roles
 export const obtenerRoles = async () => {

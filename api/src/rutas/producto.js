@@ -1,5 +1,5 @@
 import express from "express";
-import { db } from "./db.js";
+import { db } from "../../db.js";
 
 
 export const productoRouter = express
@@ -46,7 +46,7 @@ export const productoRouter = express
 })
 
 
-//ACTUALIZAR NOMBRE DEL PRODUCTO ---
+//ACTUALIZAR NOMBRE DEL PRODUCTO SEGUN SU ID---
 .put("/:id", async (req, res) => {
    const idreq = req.params.id
    const producto = req.body.producto
@@ -56,7 +56,14 @@ export const productoRouter = express
    res.send("ok")
 })
 
-//ELIMINAR PRODUCTO POR NOMBRE
+//ELIMINAR PRODUCTO POR ID ---
+.delete("/:id", async (req, res) => {
+   const id = req.params.id;
+   await db.execute("DELETE FROM producto WHERE id=:id", { id });
+   res.send("ok");
+})
+
+//ELIMINAR PRODUCTO POR NOMBRE ---
 .delete("/:nombre", async (req, res) => {
    const nombre = req.params.nombre;
    await db.execute("DELETE FROM producto WHERE nombre=:nombre", { nombre });

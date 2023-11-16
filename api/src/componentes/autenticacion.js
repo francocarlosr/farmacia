@@ -4,7 +4,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
-import { db } from "./db.js";
+import { db } from "../db/db.js";
 
 export function authConfig() {
   const jwtOptions = {
