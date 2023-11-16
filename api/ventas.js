@@ -1,21 +1,39 @@
 import express from "express";
 import { db } from "./db.js";
-
 export const ventasRouter = express
   .Router()
-  
   //Todas las ventas
   .get("/", async (req, res) => {
     const [rows, fields] = await db.execute("SELECT * FROM venta");
     res.send(rows);
   })
-  
   // venta por id
   .get("/:id", async (req, res) => {
     const { id } = req.params;
     const [rows, fields] = await db.execute(
-      //"SELECT dv.id, p.nombre AS producto, dv.cantidad, dv.precio  FROM detalleventa dc \
-      "SELECT dv.*, p.nombre AS producto FROM detalleventa dv \
+      "SELECT * FROM venta WHERE id = :id",
+      { id }
+    );
+    if (rows.length > 0) {
+      res.send(rows[0]);
+    } else {
+      res.status(404).send({ mensaje: "venta no encontrada" });
+    }
+  })
+  // venta por id
+  .delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    const [rows, fields] = await db.execute(
+      "DELETE FROM venta WHERE id = :id",
+      { id }
+    );
+    res.send("ok");
+  })
+  // detalle por id
+  .get("/:id/detalleventa", async (req, res) => {
+    const { id } = req.params;
+    const [rows, fields] = await db.execute(
+      "SELECT dv.id, p.nombre AS producto, dv.cantidad, dv.precio  FROM detalleventa dv \
       JOIN producto p ON dv.producto_id = p.id \
       WHERE dv.venta_id = :id",
       { id }
@@ -23,33 +41,40 @@ export const ventasRouter = express
     if (rows.length > 0) {
       res.send(rows);
     } else {
-      res.status(404).send({ mensaje: "venta no encontrada" });
+      res.status(404).send({ mensaje: "detalles no encontrados" });
     }
   })
-
-  
+// Agregar nueva venta
   .post("/", async (req, res) => {
-    const nuevaVenta = req.body.turno;
+    const nuevaVenta = req.body.nuevaVenta;
     const [rows] = await db.execute(
-      "insert into venta (fecha, cliente) values (:fecha, :cliente)",
+      "INSERT INTO venta (fecha, cliente, empleado_id) VALUES (:fecha, :cliente, :empleado_id)",
       {
         fecha: nuevaVenta.fecha,
         cliente: nuevaVenta.cliente,
+        empleado_id: nuevaVenta.empleado_id
       }
     );
     res.status(201).send({ mensaje: "Venta Creada" });
   })
-
+// Agregar nuevo detalle de venta
   .post("/detalleventa", async (req, res) => {
-    const nuevoDetalleventa = req.body.turno;
+    const nuevoDetalle = req.body.nuevoDetalle;
     const [rows] = await db.execute(
-      "insert into detalleventa (cantidad, precio, producto_id, venta_id) values (:cantidad, :precio, :producto_id, :venta_id)",
+      "INSERT INTO detalleventa (cantidad, precio, producto_id, venta_id) VALUES (:cantidad, :precio, :producto_id, :venta_id)",
       {
-        fecha: nuevoDetalleventa.fecha,
-        precio: nuevoDetalleventa.precio,
-        producto_id:nuevoDetalleventa.producto_id,
-        venta_id:nuevoDetalleventa.venta_id_id,
+        cantidad: nuevoDetalle.cantidad,
+        precio: nuevoDetalle.precio,
+        producto_id: nuevoDetalle.producto_id,
+        venta_id: nuevoDetalle.venta_id
       }
     );
-    res.status(201).send({ mensaje: "Detalle Creado" });
-  })
+  await db.execute(
+    "UPDATE producto SET stock = stock - :cantidad WHERE id = :producto_id",
+    {
+      cantidad: nuevoDetalle.cantidad,
+      producto_id: nuevoDetalle.producto_id
+    }
+  );
+  res.status(201).send({ mensaje: "Detalle Creado" });
+});
