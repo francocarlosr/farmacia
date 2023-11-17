@@ -4,7 +4,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
-import { db } from "../db/db.js";
+import { db } from "../../db.js";
 
 export function authConfig() {
   const jwtOptions = {
@@ -15,7 +15,7 @@ export function authConfig() {
   passport.use(
     new Strategy(jwtOptions, async (payload, next) => {
       const [rows, fields] = await db.execute(
-        "SELECT usuario FROM cuentas WHERE usuario = :usuario",
+        "SELECT usuario FROM empleado WHERE usuario = :usuario",
         { usuario: payload.usuario }
       );
       if (rows.length > 0) {
@@ -51,7 +51,12 @@ export const authRouter = express
 
       // Obtengo cuenta de usuario
       const [rows, fields] = await db.execute(
-        "SELECT usuario, password FROM cuentas WHERE usuario = :usuario",
+        `SELECT
+           e.usuario,
+           e.password,
+           e.rol
+          FROM empleado e
+         WHERE usuario = :usuario`,
         { usuario }
       );
       if (rows.length === 0) {
@@ -59,8 +64,10 @@ export const authRouter = express
         return;
       }
 
+      const user = rows[0];
+
       // Verificar contraseña
-      const passwordCompared = await bcrypt.compare(password, rows[0].password);
+      const passwordCompared = await bcrypt.compare(password, user.password);
       if (!passwordCompared) {
         res.status(400).send("Usuario o contraseña inválida");
         return;
@@ -71,7 +78,15 @@ export const authRouter = express
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "2h",
       });
-      res.send({ usuario, token });
+
+      // Sesion en WEB
+      const sesion = {
+        usuario: user.usuario,
+        rol: user.rol,
+        token,
+      };
+
+      res.send(sesion);
     }
   )
 
@@ -81,4 +96,11 @@ export const authRouter = express
     (req, res) => {
       res.json(req.user);
     }
-  );
+  )
+
+  .get("/", async (req, res) => {
+    const [rows, fields] = await db.execute(
+      "SELECT id, usuario, rol FROM empleado"
+    );
+    res.send(rows);
+  });

@@ -4,14 +4,38 @@ import { db } from "../../db.js";
 export const comprasRouter = express
   .Router()
   
-  //GET -LISTAR TODAS LAS COMPRAS ---
+  //Todas las compras
   .get("/", async (req, res) => {
     const [rows, fields] = await db.execute("SELECT * FROM compra");
     res.send(rows);
   })
   
-  // GET - BUSCAR COMPRA POR ID ---
+  // compra por id
   .get("/:id", async (req, res) => {
+    const { id } = req.params;
+    const [rows, fields] = await db.execute(
+      "SELECT * FROM compra WHERE id = :id",
+      { id }
+    );
+    if (rows.length > 0) {
+      res.send(rows[0]);
+    } else {
+      res.status(404).send({ mensaje: "compra no encontrada" });
+    }
+  })
+
+    // compra por id
+  .delete("/:id", async (req, res) => {
+      const { id } = req.params;
+      const [rows, fields] = await db.execute(
+        "DELETE FROM compra WHERE id = :id",
+        { id }
+      );
+      res.send("ok");
+    })
+
+  // detalle por id
+  .get("/:id/detallecompra", async (req, res) => {
     const { id } = req.params;
     const [rows, fields] = await db.execute(
       "SELECT dc.id, p.nombre AS producto, dc.cantidad, dc.precio  FROM detallecompra dc \
@@ -22,35 +46,46 @@ export const comprasRouter = express
     if (rows.length > 0) {
       res.send(rows);
     } else {
-      res.status(404).send({ mensaje: "compra no encontrada" });
+      res.status(404).send({ mensaje: "detalles no encontrados" });
     }
   })
 
-  //INGRESAR COMPRA ---
+// Agregar nueva compra
   .post("/", async (req, res) => {
-    const nuevaCompra = req.body.turno;
+    const nuevaCompra = req.body.nuevaCompra;
     const [rows] = await db.execute(
-      "insert into compra (fecha, proveedor) values (:fecha, :proveedor)",
+      "INSERT INTO compra (fecha, proveedor) VALUES (:fecha, :proveedor)",
       {
         fecha: nuevaCompra.fecha,
-        proveedor: nuevaCompra.proveedor,
+        proveedor: nuevaCompra.proveedor
       }
     );
     res.status(201).send({ mensaje: "Compra Creada" });
   })
 
-
-  //INGRESAR DETALLECOMPRA ---
+// Agregar nuevo detalle de compra
   .post("/detallecompra", async (req, res) => {
-    const nuevoDetallecompra = req.body.turno;
+    const nuevoDetalle = req.body.nuevoDetalle;
     const [rows] = await db.execute(
-      "insert into detallecompra (cantidad, precio, producto_id, compra_id) values (:cantidad, :precio, :producto_id, :compra_id)",
+      "INSERT INTO detallecompra (cantidad, precio, producto_id, compra_id) VALUES (:cantidad, :precio, :producto_id, :compra_id)",
       {
-        fecha: nuevoDetallecompra.fecha,
-        precio: nuevoDetallecompra.precio,
-        producto_id:nuevoDetallecompra.producto_id,
-        compra_id:nuevoDetallecompra.compra_id,
+        cantidad: nuevoDetalle.cantidad,
+        precio: nuevoDetalle.precio,
+        producto_id: nuevoDetalle.producto_id,
+        compra_id: nuevoDetalle.compra_id
       }
     );
-    res.status(201).send({ mensaje: "Detalle Creado" });
-  })
+
+  await db.execute(
+    "UPDATE producto SET stock = stock + :cantidad WHERE id = :producto_id",
+    {
+      cantidad: nuevoDetalle.cantidad,
+      producto_id: nuevoDetalle.producto_id
+    }
+  );
+
+  res.status(201).send({ mensaje: "Detalle Creado" });
+})
+
+
+  
