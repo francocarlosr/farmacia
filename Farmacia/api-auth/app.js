@@ -5,7 +5,7 @@ import cors from "cors";
 import { comprasRouter } from "./compras.js";
 import { ventasRouter } from "./ventas.js";
 import { empleadoRouter } from "./empleado.js";
-
+import { loginRouter } from "./login.js";
 // import { authConfig, authRouter } from "./auth.js";
 
 // Creo aplicacion express
@@ -17,8 +17,8 @@ app.use(cors());
 // authConfig();
 app.use("/compras", comprasRouter);
 app.use("/ventas", ventasRouter);
-app.use("/empleado", empleadoRouter);
-
+app.use("/empleados", empleadoRouter);
+app.use("/login", loginRouter);
 
 // Pongo en funcionamiento la API en puerto 3000
 app.listen(3000, () => {

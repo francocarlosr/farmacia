@@ -51,4 +51,4 @@ VALUES
 
 INSERT INTO rol (nombre) VALUES
 ('admin'),
-('usuario');
+('user');

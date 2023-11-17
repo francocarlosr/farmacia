@@ -1,0 +1,20 @@
+--- CARGAR REGISTRO EMPLEADO (POST)---
+http://localhost:3000/empleados/registro
+{
+  "nombre": "Carlos",
+  "apellido": "Franco",
+  "user":"Carlitos",
+  "mail": "Carlitos@gmail.com",
+  "contrasena":"Carlos123"
+}
+
+--- VER REGISTRO EMPLEADO (GET)---
+
+--ver por id--
+http://localhost:3000/empleados/:id
+
+--ver todos--
+http://localhost:3000/empleados/filtro/
+
+--poner filtro--
+http://localhost:3000/empleados/filtro/?nombre=Exequiel

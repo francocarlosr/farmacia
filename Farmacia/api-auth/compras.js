@@ -1,15 +1,14 @@
 import express from "express";
 import { db } from "./db.js";
 
-export const comprasRouter = express
-  .Router()
-  
+export const comprasRouter = express.Router()
+
   //Todas las compras
   .get("/", async (req, res) => {
     const [rows, fields] = await db.execute("SELECT * FROM compra");
     res.send(rows);
   })
-  
+
   // compra por id
   .get("/:id", async (req, res) => {
     const { id } = req.params;
@@ -26,7 +25,6 @@ export const comprasRouter = express
     }
   })
 
-  
   .post("/", async (req, res) => {
     const nuevaCompra = req.body.turno;
     const [rows] = await db.execute(
@@ -46,9 +44,9 @@ export const comprasRouter = express
       {
         fecha: nuevoDetallecompra.fecha,
         precio: nuevoDetallecompra.precio,
-        producto_id:nuevoDetallecompra.producto_id,
-        compra_id:nuevoDetallecompra.compra_id,
+        producto_id: nuevoDetallecompra.producto_id,
+        compra_id: nuevoDetallecompra.compra_id,
       }
     );
     res.status(201).send({ mensaje: "Detalle Creado" });
-  })
+  });
