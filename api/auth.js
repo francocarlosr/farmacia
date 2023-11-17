@@ -53,8 +53,9 @@ export const authRouter = express
       const [rows, fields] = await db.execute(
         `SELECT
            e.usuario,
-           e.password
-         FROM empleados e
+           e.password,
+           e.rol
+          FROM empleado e
          WHERE usuario = :usuario`,
         { usuario }
       );
@@ -81,6 +82,7 @@ export const authRouter = express
       // Sesion en WEB
       const sesion = {
         usuario: user.usuario,
+        rol: user.rol,
         token,
       };
 
@@ -90,8 +92,15 @@ export const authRouter = express
 
   .get(
     "/perfil",
-    passport.authenticate("jwt", { session: true }),
+    passport.authenticate("jwt", { session: false }),
     (req, res) => {
       res.json(req.user);
     }
-  );
+  )
+
+  .get("/", async (req, res) => {
+    const [rows, fields] = await db.execute(
+      "SELECT id, usuario, rol FROM empleado"
+    );
+    res.send(rows);
+  });
