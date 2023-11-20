@@ -13,6 +13,9 @@ export const Layout = () => {
           <li>
             <Link to="/productos">Productos</Link>
           </li>
+          <li>
+            <Link to="/compras">Compras</Link>
+          </li>
         </ul>
       </nav>
       <Outlet />

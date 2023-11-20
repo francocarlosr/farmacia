@@ -3,6 +3,7 @@ import { HomePage } from "./Pages/HomePage";
 import { Layout } from "./Pages/Layout";
 import { LoginPage } from "./Pages/LoginPage";
 import { Productos } from "./Pages/Productos";
+import { Compras } from "./Pages/Compras";
 import { RequiredAuth } from "./context/RequireAuth";
 
 function App() {
@@ -19,6 +20,14 @@ function App() {
             element={
               <RequiredAuth>
                 <Productos/>
+              </RequiredAuth>
+            }
+          />
+          <Route
+            path="/compras"
+            element={
+              <RequiredAuth>
+                <Compras/>
               </RequiredAuth>
             }
           />

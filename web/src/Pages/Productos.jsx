@@ -45,18 +45,3 @@ export const Productos = () => {
   );
 };
 
-/*
-
-<tbody>
-          {productos.map((prod) => (
-            <tr key={prod.id} onDoubleClick={() => producto(prod)}>
-              <td>{prod.nombre}</td>
-              <td>{prod.descripcion}</td>
-              <td>{prod.stock}</td>
-              <td>{prod.precioCompra}</td>
-              <td>{prod.precioVenta}</td>
-            </tr>
-          ))}
-        </tbody>
-
-*/
