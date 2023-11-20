@@ -34,8 +34,8 @@ export const productoRouter = express
    try {
       const producto = req.body.producto;
       const [rows] = await db.execute(
-         "INSERT INTO producto (nombre, codigo, precio, stock) VALUES (:nombre, :codigo, :precio, :stock)",
-         { nombre: producto.nombre, codigo: producto.codigo, precio: producto.precio, stock: producto.stock }
+         "INSERT INTO producto (nombre, codigo, precio ) VALUES (:nombre, :codigo, :precio)",
+         { nombre: producto.nombre, codigo: producto.codigo, precio: producto.precio }
       );
 
       res.status(201).send({ ...producto, id: rows.insertId });

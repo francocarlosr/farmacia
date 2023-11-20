@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import { HomePage } from "./Pages/HomePage";
 import { Layout } from "./Pages/Layout";
 import { LoginPage } from "./Pages/LoginPage";
 import { Productos } from "./Pages/Productos";
@@ -22,7 +21,6 @@ function App() {
               <RequiredAuth>
                 <Layout/>
               </RequiredAuth>}>
-          <Route index element={<HomePage />} />
           <Route
             path="/productos"
             element={
