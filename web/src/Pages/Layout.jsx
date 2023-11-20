@@ -1,8 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
 import { AuthStatus } from "../context/AuthStatus";
-import { useEffect, useState } from "react";
-import { useAuthContext } from "../context/AuthContext";
-import axios from "axios";
 
 export const Layout = () => {
   return (
