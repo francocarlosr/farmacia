@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <h1>
-        <center>Farmacias</center>
+        <center>Farmacias P@ssw0rd</center>
       </h1>
       <Routes>
         <Route path="/" element={<Layout />}>

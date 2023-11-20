@@ -1,38 +1,3 @@
-/*export const Productos = () => {
-  return (
-    <form>
-      <label>
-        Nombre:
-        <input type="text" />
-      </label>
-      <br />
-      <br />
-      <label>
-        Apellido:
-        <input type="text" />
-      </label>
-      <br />
-      <br />
-      <label>
-        DNI:
-        <input type="number" />
-      </label>
-      <br />
-      <br />
-      <label>
-        Fecha de Nacimiento:
-        <input type="date" />
-      </label>
-      <br />
-      <br />
-      <button type="button">Agregar pasajero</button>
-      <button type="button">Borrar pasajero</button>
-    </form>
-  );
-};
-*/
-
-
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
@@ -43,7 +8,7 @@ export const Productos = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/productos`, {
+      .get(`http://localhost:3000/producto`, {
         headers: { Authorization: `Bearer ${sesion.token}` },
       })
       .then((response) => setProductos(response.data));
@@ -52,13 +17,30 @@ export const Productos = () => {
   return (
     <>
       <h2>Productos</h2>
-      <ul>
-        {productos.map((producto) => (
-          <li key={producto.id}>
-            {producto.nombre} {producto.codigo}
-          </li>
-        ))}
-      </ul>
+      <div className="container">
+      <table className="table table-hover">
+        <thead className="table-success">
+          <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Codigo</th>
+            <th>Precio</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {productos.map((producto) => (
+            <tr key={producto.id} onDoubleClick={() => producto(producto)}>
+              <td>{producto.id}</td>
+              <td>{producto.nombre}</td>
+              <td>{producto.codigo}</td>
+              <td>{producto.precio}</td>
+              <td>{producto.stock}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
     </>
   );
 };
