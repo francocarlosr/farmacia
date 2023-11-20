@@ -4,6 +4,8 @@ import { Layout } from "./Pages/Layout";
 import { LoginPage } from "./Pages/LoginPage";
 import { Productos } from "./Pages/Productos";
 import { Compras } from "./Pages/Compras";
+import { Ventas } from "./Pages/Ventas";
+import { Empleados } from "./Pages/Empleados";
 import { RequiredAuth } from "./context/RequireAuth";
 
 function App() {
@@ -13,7 +15,13 @@ function App() {
         <center>Farmacias P@ssw0rd</center>
       </h1>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/" 
+            element={
+              <RequiredAuth>
+                <Layout/>
+              </RequiredAuth>}>
           <Route index element={<HomePage />} />
           <Route
             path="/productos"
@@ -28,6 +36,22 @@ function App() {
             element={
               <RequiredAuth>
                 <Compras/>
+              </RequiredAuth>
+            }
+          />
+          <Route
+            path="/ventas"
+            element={
+              <RequiredAuth>
+                <Ventas/>
+              </RequiredAuth>
+            }
+          />
+          <Route
+            path="/empleados"
+            element={
+              <RequiredAuth>
+                <Empleados/>
               </RequiredAuth>
             }
           />
