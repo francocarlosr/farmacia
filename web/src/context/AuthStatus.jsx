@@ -12,7 +12,7 @@ export const AuthStatus = () => {
   return (
     <>
       <p>Vendedor {sesion.usuario} conectado</p>
-      <button
+      <button type="submit" className="btn btn-secondary"
         onClick={() => {
           logout(navigate);
         }}

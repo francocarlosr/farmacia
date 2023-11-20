@@ -5,7 +5,7 @@ export const Layout = () => {
   return (
     <>
       
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
           <ul className="navbar-nav">
             <li className="nav-item">
