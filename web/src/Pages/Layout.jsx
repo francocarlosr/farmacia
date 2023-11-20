@@ -7,25 +7,38 @@ import axios from "axios";
 export const Layout = () => {
   return (
     <>
-      <AuthStatus />
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/productos">Productos</Link>
-          </li>
-          <li>
-            <Link to="/compras">Compras</Link>
-          </li>
-          <li>
-            <Link to="/ventas">Ventas</Link>
-          </li>
-          <li>
-            <Link to="/empleados">Empleados</Link>
-          </li>
-        </ul>
+      
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container">
+          <ul className="navbar-nav">
+            <li className="nav-item">
+              <Link to="/" className="nav-link">
+                Home
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/productos" className="nav-link">
+                Productos
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/compras" className="nav-link">
+                Compras
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/ventas" className="nav-link">
+                Ventas
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/empleados" className="nav-link">
+                Empleados
+              </Link>
+            </li>
+          </ul>
+          <AuthStatus />
+        </div>
       </nav>
       <Outlet />
     </>
