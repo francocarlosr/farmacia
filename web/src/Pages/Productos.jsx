@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"; 
 import { useAuthContext } from "../context/AuthContext"; 
-import axios from "axios"; 
+import axios from "axios";
+
 export const Productos = () => { 
   const { sesion } = useAuthContext(); 
   const [productos, setProductos] = useState([]); 
