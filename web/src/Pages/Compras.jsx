@@ -15,7 +15,7 @@ export const Compras = () => {
   }, [sesion]);
 
   return (
-    <>
+    <>asasasasfasfasfasfafafafasass
       <h2>Compras</h2>
       <div className="container">
       <table className="table table-hover">

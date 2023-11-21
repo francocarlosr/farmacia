@@ -2,8 +2,20 @@ import express from "express";
 import { db } from "../../db.js";
 
 export const comprasRouter = express
-  .Router()
-  
+.Router()
+
+// Agregar nueva compra
+  .post("/", async (req, res) => {
+    const nuevaCompra = req.body.nuevaCompra;
+    const [rows] = await db.execute(
+      "INSERT INTO compra (fecha, proveedor) VALUES (:fecha, :proveedor)",
+      {
+        fecha: nuevaCompra.fecha,
+        proveedor: nuevaCompra.proveedor
+      }
+    );
+    res.status(201).send({ mensaje: "Compra Creada" });
+  })
   //Todas las compras
   .get("/", async (req, res) => {
     const [rows, fields] = await db.execute("SELECT * FROM compra");
@@ -50,18 +62,6 @@ export const comprasRouter = express
     }
   })
 
-// Agregar nueva compra
-  .post("/", async (req, res) => {
-    const nuevaCompra = req.body.nuevaCompra;
-    const [rows] = await db.execute(
-      "INSERT INTO compra (fecha, proveedor) VALUES (:fecha, :proveedor)",
-      {
-        fecha: nuevaCompra.fecha,
-        proveedor: nuevaCompra.proveedor
-      }
-    );
-    res.status(201).send({ mensaje: "Compra Creada" });
-  })
 
 // Agregar nuevo detalle de compra
   .post("/detallecompra", async (req, res) => {
