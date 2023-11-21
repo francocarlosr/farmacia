@@ -36,7 +36,7 @@ export const LoginPage = () => {
           <label htmlFor="password" className="form-label">Contraseña:</label>
           <input name="password" type="password" className="form-control" />
         </div>
-        <button type="submit" className="btn btn-primary">Ingresar</button>
+        <button type="submit" className="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i></button>
       </form>
       {error && <p>Usuario o contraseña inválido</p>}
     </>

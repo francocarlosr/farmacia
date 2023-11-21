@@ -68,12 +68,29 @@ export const Productos = () => {
     }
   };
 
+  const eliminarProducto = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/producto/${id}`, {
+        headers: { Authorization: `Bearer ${sesion.token}` },
+      });
+      const updatedProductos = productos.filter((producto) => producto.id !== id);
+      setProductos(updatedProductos);
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+    }
+  };
+
   return (
     <>
       <h2>Productos</h2>
       <div className="container">
         <div className="row">
           <div className="col-md-6">
+            <button className="btn btn-primary" onClick={cargarProductos}>
+              Refrescar Tabla
+            </button>
+            <br />
+            <br />
             <label htmlFor="nombreProd">Nombre:</label>
             <input
               type="text"
@@ -114,11 +131,6 @@ export const Productos = () => {
             <button className="btn btn-primary" onClick={buscarProducto}>
               Buscar
             </button>
-            <br />
-            <br />
-            <button className="btn btn-primary" onClick={cargarProductos}>
-              Cargar Tabla
-            </button>
           </div>
           <div className="col-md-6">
             <table className="table table-hover">
@@ -129,6 +141,7 @@ export const Productos = () => {
                   <th>Codigo</th>
                   <th>Precio</th>
                   <th>Stock</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -139,6 +152,14 @@ export const Productos = () => {
                     <td>{producto.codigo}</td>
                     <td>{producto.precio}</td>
                     <td>{producto.stock}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => eliminarProducto(producto.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
