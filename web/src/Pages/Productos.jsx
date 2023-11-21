@@ -91,11 +91,9 @@ export const Productos = () => {
       await axios.put(
         `http://localhost:3000/producto/${idSeleccionado}`,
         {
-          producto:{
           nombre: nombreEditado,
           codigo: codigoEditado,
-          precio: precioEditado, 
-        }
+          precio: precioEditado,
         },
         {
           headers: { Authorization: `Bearer ${sesion.token}` },
@@ -108,18 +106,8 @@ export const Productos = () => {
     }
   };
 
-  const eliminarTodosLosProductos = async () => {
-    try {
-      await axios.delete("http://localhost:3000/producto", {
-        headers: { Authorization: `Bearer ${sesion.token}` },
-      });
-      setProductos([]);
-    } catch (error) {
-      console.error("Error al eliminar todos los productos:", error);
-    }
-  };
-
   const seleccionarProducto = (producto) => {
+    console.log("Producto seleccionado:", producto);
     setIdSeleccionado(producto.id);
     setNombreEditado(producto.nombre);
     setCodigoEditado(producto.codigo);
@@ -150,28 +138,30 @@ export const Productos = () => {
             </button>
             <br />
             <br />
-            <label htmlFor="nombreProd">Nombre:</label>
+            <label htmlFor="nombreEditado">Nombre:</label>
             <input
               type="text"
-              id="nombreProd"
-              value={nombreProd}
-              onChange={(e) => setNombreProd(e.target.value)}
+              id="nombreEditado"
+              value={nombreEditado}
+              onChange={(e) => setNombreEditado(e.target.value)}
               className="form-control"
             />
-            <label htmlFor="codigoProd">Código:</label>
+
+            <label htmlFor="codigoEditado">Código:</label>
             <input
               type="text"
-              id="codigoProd"
-              value={codigoProd}
-              onChange={(e) => setCodigoProd(e.target.value)}
+              id="codigoEditado"
+              value={codigoEditado}
+              onChange={(e) => setCodigoEditado(e.target.value)}
               className="form-control"
             />
-            <label htmlFor="precioProd">Precio:</label>
+
+            <label htmlFor="precioEditado">Precio:</label>
             <input
               type="text"
-              id="precioProd"
-              value={precioProd}
-              onChange={(e) => setPrecioProd(e.target.value)}
+              id="precioEditado"
+              value={precioEditado}
+              onChange={(e) => setPrecioEditado(e.target.value)}
               className="form-control"
             />
             {idSeleccionado ? (
@@ -221,16 +211,32 @@ export const Productos = () => {
               </thead>
               <tbody>
                 {productos.map((producto) => (
-                  <tr
-                    key={producto.id}
-                    onClick={() => seleccionarProducto(producto)}
-                    style={{ cursor: "pointer" }}
-                  >
+                  <tr key={producto.id}>
                     <td>{producto.id}</td>
-                    <td>{producto.nombre}</td>
-                    <td>{producto.codigo}</td>
-                    <td>{producto.precio}</td>
-                    <td>{producto.stock}</td>
+                    <td
+                      onClick={() => seleccionarProducto(producto)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {producto.nombre}
+                    </td>
+                    <td
+                      onClick={() => seleccionarProducto(producto)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {producto.codigo}
+                    </td>
+                    <td
+                      onClick={() => seleccionarProducto(producto)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {producto.precio}
+                    </td>
+                    <td
+                      onClick={() => seleccionarProducto(producto)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {producto.stock}
+                    </td>
                     <td>
                       <button
                         className="btn btn-danger btn-sm"

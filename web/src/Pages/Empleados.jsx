@@ -8,7 +8,7 @@ export const Empleados = () => {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [rol, setRol] = useState('');
-  const [idSeleccionado, setIdSeleccionado] = useState(null);
+  const [idSeleccionado, setIdSeleccionado] = useState(false);
 
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export const Empleados = () => {
         'http://localhost:3000/empleados',
         {
           usuario,
-          password, // Asegúrate de manejar la contraseña de manera segura
+          password, // hay que poner el coso para manejar la contraseña de manera segura
           rol,
         }
       );
@@ -60,7 +60,7 @@ export const Empleados = () => {
         `http://localhost:3000/empleados/${idSeleccionado}`,
         {
           usuario,
-          password, // Asegúrate de manejar la contraseña de manera segura
+          password, // hacer para qie la contraseña se vea con puntitos 
           rol,
         }
       );
@@ -142,18 +142,23 @@ export const Empleados = () => {
             <div className="d-grid gap-2">
               {idSeleccionado ? (
                 <>
-                  <button className="btn btn-primary" onClick={editarEmpleado}>
+                  <button type="button" className="btn btn-primary" onClick={editarEmpleado}>
                     Aceptar
                   </button>
                   <button
+                    type="button"
                     className="btn btn-secondary"
-                    onClick={() => cargarDatosEmpleado(null)}
+                    onClick={() => {
+                      limpiarFormulario()
+                      cargarDatosEmpleado(null)}
+                    }
+                    
                   >
                     Cancelar
                   </button>
                 </>
               ) : (
-                <button className="btn btn-success" onClick={agregarEmpleado}>
+                <button type="button" className="btn btn-success" onClick={agregarEmpleado}>
                   Agregar
                 </button>
               )}
