@@ -49,6 +49,17 @@ export const Productos = () => {
     }
   };
 
+  const eliminarProducto = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/producto/${id}`, {
+        headers: { Authorization: `Bearer ${sesion.token}` },
+      });
+      setProductos(productos.filter((producto) => producto.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+    }
+  };
+
   const buscarProducto = async () => {
     try {
       const response = await axios.get(
@@ -65,18 +76,6 @@ export const Productos = () => {
       }
     } catch (error) {
       console.error("Error al buscar producto:", error);
-    }
-  };
-
-  const eliminarProducto = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3000/producto/${id}`, {
-        headers: { Authorization: `Bearer ${sesion.token}` },
-      });
-      const updatedProductos = productos.filter((producto) => producto.id !== id);
-      setProductos(updatedProductos);
-    } catch (error) {
-      console.error("Error al eliminar producto:", error);
     }
   };
 
@@ -141,7 +140,7 @@ export const Productos = () => {
                   <th>Codigo</th>
                   <th>Precio</th>
                   <th>Stock</th>
-                  <th>Acciones</th>
+                  <th>Acciones</th> {/* Agregamos la columna de acciones */}
                 </tr>
               </thead>
               <tbody>
@@ -155,7 +154,7 @@ export const Productos = () => {
                     <td>
                       <button
                         className="btn btn-danger"
-                        onClick={() => eliminarProducto(producto.id)}
+                        onClick={() => eliminarProducto(producto.id)} {/* Agregamos la función de eliminarProducto */}
                       >
                         Eliminar
                       </button>

@@ -46,12 +46,12 @@ export const productoRouter = express
 })
 
 
-//ACTUALIZAR NOMBRE DEL PRODUCTO SEGUN SU ID---
+//ACTUALIZAR PRODUCTO SEGUN SU ID---
 .put("/:id", async (req, res) => {
    const idreq = req.params.id
    const producto = req.body.producto
-   await db.execute("UPDATE producto SET nombre=:nombre , precio=:precio,codigo=:codigo, stock=:stock WHERE id=:id", {
-      id: idreq, nombre: producto.nombre, precio: producto.precio, codigo: producto.codigo, stock: producto.stock
+   await db.execute("UPDATE producto SET nombre=:nombre , precio=:precio,codigo=:codigo WHERE id=:id", {
+      id: idreq, nombre: producto.nombre, precio: producto.precio, codigo: producto.codigo
    })
    res.send("ok")
 })
@@ -61,17 +61,4 @@ export const productoRouter = express
    const id = req.params.id;
    await db.execute("DELETE FROM producto WHERE id=:id", { id });
    res.send("ok");
-})
-
-//ELIMINAR PRODUCTO POR NOMBRE ---
-.delete("/:nombre", async (req, res) => {
-   const nombre = req.params.nombre;
-   await db.execute("DELETE FROM producto WHERE nombre=:nombre", { nombre });
-   res.send("ok");
 });
-
-
-
-
-
-
