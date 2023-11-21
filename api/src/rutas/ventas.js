@@ -1,14 +1,15 @@
 import express from "express";
+import { body, validationResult } from "express-validator";
 import { db } from "../../db.js";
 
 export const ventasRouter = express
   .Router()
-  //Todas las ventas
+  // Todas las ventas
   .get("/", async (req, res) => {
     const [rows, fields] = await db.execute("SELECT * FROM venta");
     res.send(rows);
   })
-  // venta por id
+  // Venta por id
   .get("/:id", async (req, res) => {
     const { id } = req.params;
     const [rows, fields] = await db.execute(
@@ -18,10 +19,10 @@ export const ventasRouter = express
     if (rows.length > 0) {
       res.send(rows[0]);
     } else {
-      res.status(404).send({ mensaje: "venta no encontrada" });
+      res.status(404).send({ mensaje: "Venta no encontrada" });
     }
   })
-  // venta por id
+  // Venta por id
   .delete("/:id", async (req, res) => {
     const { id } = req.params;
     const [rows, fields] = await db.execute(
@@ -30,7 +31,7 @@ export const ventasRouter = express
     );
     res.send("ok");
   })
-  // detalle por id
+  // Detalle por id
   .get("/:id/detalleventa", async (req, res) => {
     const { id } = req.params;
     const [rows, fields] = await db.execute(
@@ -42,23 +43,34 @@ export const ventasRouter = express
     if (rows.length > 0) {
       res.send(rows);
     } else {
-      res.status(404).send({ mensaje: "detalles no encontrados" });
+      res.status(404).send({ mensaje: "Detalles no encontrados" });
     }
   })
-// Agregar nueva venta
-  .post("/", async (req, res) => {
-    const nuevaVenta = req.body.nuevaVenta;
-    const [rows] = await db.execute(
-      "INSERT INTO venta (fecha, cliente, empleado_id) VALUES (:fecha, :cliente, :empleado_id)",
-      {
-        fecha: nuevaVenta.fecha,
-        cliente: nuevaVenta.cliente,
-        empleado_id: nuevaVenta.empleado_id
+  // Agregar nueva venta
+  .post(
+    "/",
+    [
+      body("nuevaVenta.cliente").isString().notEmpty(),
+      body("nuevaVenta.empleado_id").isInt({ min: 1 }),
+    ],
+    async (req, res) => {
+      const validacion = validationResult(req);
+      if (!validacion.isEmpty()) {
+        return res.status(400).json({ errors: validacion.array() });
       }
-    );
-    res.status(201).send({ mensaje: "Venta Creada" });
-  })
-// Agregar nuevo detalle de venta
+  
+      const nuevaVenta = req.body.nuevaVenta;
+      const [rows] = await db.execute(
+        "INSERT INTO venta (cliente, empleado_id) VALUES (:cliente, :empleado_id)",
+        {
+          cliente: nuevaVenta.cliente,
+          empleado_id: nuevaVenta.empleado_id,
+        }
+      );
+      res.status(201).send({ mensaje: "Venta creada correctamente" });
+    }
+  )
+  // Agregar nuevo detalle de venta
   .post("/detalleventa", async (req, res) => {
     const nuevoDetalle = req.body.nuevoDetalle;
     const [rows] = await db.execute(
@@ -67,15 +79,17 @@ export const ventasRouter = express
         cantidad: nuevoDetalle.cantidad,
         precio: nuevoDetalle.precio,
         producto_id: nuevoDetalle.producto_id,
-        venta_id: nuevoDetalle.venta_id
+        venta_id: nuevoDetalle.venta_id,
       }
     );
-  await db.execute(
-    "UPDATE producto SET stock = stock - :cantidad WHERE id = :producto_id",
-    {
-      cantidad: nuevoDetalle.cantidad,
-      producto_id: nuevoDetalle.producto_id
-    }
-  );
-  res.status(201).send({ mensaje: "Detalle Creado" });
-});
+    await db.execute(
+      "UPDATE producto SET stock = stock - :cantidad WHERE id = :producto_id",
+      {
+        cantidad: nuevoDetalle.cantidad,
+        producto_id: nuevoDetalle.producto_id,
+      }
+    );
+    res.status(201).send({ mensaje: "Detalle creado correctamente" });
+  });
+
+export default ventasRouter;
