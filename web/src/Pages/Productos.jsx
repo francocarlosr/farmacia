@@ -9,6 +9,7 @@ export const Productos = () => {
   const [codigoProd, setCodigoProd] = useState("");
   const [precioProd, setPrecioProd] = useState("");
   const [stockProd, setStockProd] = useState("");
+  const [ingreseProduct, setIngreseProduct] = useState("");
 
   useEffect(() => {
     axios
@@ -20,7 +21,6 @@ export const Productos = () => {
 
   const agregarProducto = async () => {
     try {
-      // Enviar datos del nuevo producto al backend
       const response = await axios.post(
         "http://localhost:3000/producto",
         {
@@ -36,16 +36,33 @@ export const Productos = () => {
         }
       );
 
-      // Actualizar la lista de productos en el estado
       setProductos([...productos, response.data]);
-      
-      // Limpiar los campos del formulario
       setNombreProd("");
       setCodigoProd("");
       setPrecioProd("");
       setStockProd("");
     } catch (error) {
       console.error("Error al agregar producto:", error);
+    }
+  };
+
+  const buscarProducto = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/producto/${ingreseProduct}`, {
+        headers: { Authorization: `Bearer ${sesion.token}` },
+      });
+
+      // Si ingreseProduct está vacío, cargar todos los productos nuevamente
+      if (!ingreseProduct.trim()) {
+        const allProducts = await axios.get("http://localhost:3000/producto", {
+          headers: { Authorization: `Bearer ${sesion.token}` },
+        });
+        setProductos(allProducts.data);
+      } else {
+        setProductos([response.data]);
+      }
+    } catch (error) {
+      console.error("Error al buscar producto:", error);
     }
   };
 
@@ -87,6 +104,20 @@ export const Productos = () => {
 
         <button onClick={agregarProducto}>Agregar</button>
 
+        <br />
+        <br />
+
+        <label htmlFor="ingreseProduct">Ingrese Producto:</label>
+        <input
+          type="text"
+          id="ingreseProduct"
+          value={ingreseProduct}
+          onChange={(e) => setIngreseProduct(e.target.value)}
+        />
+        <button onClick={buscarProducto}>Buscar</button>
+
+        <br />
+
         <table className="table table-hover">
           <thead className="table-success">
             <tr>
@@ -112,4 +143,4 @@ export const Productos = () => {
       </div>
     </>
   );
-}
+};

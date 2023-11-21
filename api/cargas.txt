@@ -33,7 +33,7 @@ INSERT INTO `farmacia`.`lote` (`lote`, `vencimiento`, `cantidad`, `producto_id`)
 
 #detalle de compra
 
-INSERT INTO `farmacia`.`detallecompra` (`cantidad`, `precio`, `producto_id`, `venta_id`)
+INSERT INTO `farmacia`.`detallecompra` (`cantidad`, `precio`, `producto_id`, `compra_id`)
 VALUES
   ('2', '8', '2', '1'),
   ('2', '10', '1', '1'),
