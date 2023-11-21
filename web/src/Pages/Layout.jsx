@@ -4,7 +4,6 @@ import { AuthStatus } from "../context/AuthStatus";
 export const Layout = () => {
   return (
     <>
-      
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
           <ul className="navbar-nav">

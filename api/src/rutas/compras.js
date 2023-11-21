@@ -7,7 +7,7 @@ export const comprasRouter = express
 
   // Validation middleware for creating a new compra
   const validateNewCompra = [
-    body("nuevaCompra.proveedor").isString().notEmpty().isLength({ max: 45 }),
+    body("proveedor").isString().notEmpty().isLength({ max: 45 }),
   ]
 
   // Todas las compras
@@ -79,9 +79,9 @@ export const comprasRouter = express
         return res.status(400).json({ errors });
       }
   
-      const nuevaCompra = req.body.nuevaCompra;
+      
       const [rows] = await db.execute("INSERT INTO compra (proveedor) VALUES (:proveedor)", {
-        proveedor: nuevaCompra.proveedor,
+        proveedor: req.body.proveedor
       });
       res.status(201).send({ mensaje: "Compra Creada" });
     } catch (error) {

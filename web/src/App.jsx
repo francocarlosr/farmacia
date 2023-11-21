@@ -50,9 +50,7 @@ function App() {
           <Route
             path="/empleados"
             element={
-              <RequiredAuth>
                 <Empleados/>
-              </RequiredAuth>
             }
           />
           <Route path="/login" element={<LoginPage />} />
