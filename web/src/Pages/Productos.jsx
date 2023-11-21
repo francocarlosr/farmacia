@@ -85,11 +85,6 @@ export const Productos = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-6">
-            <button className="btn btn-primary" onClick={cargarProductos}>
-              Refrescar Tabla
-            </button>
-            <br />
-            <br />
             <label htmlFor="nombreProd">Nombre:</label>
             <input
               type="text"
@@ -130,6 +125,11 @@ export const Productos = () => {
             <button className="btn btn-primary" onClick={buscarProducto}>
               Buscar
             </button>
+            <br />
+            <br />
+            <button className="btn btn-primary" onClick={cargarProductos}>
+              Cargar Tabla
+            </button>
           </div>
           <div className="col-md-6">
             <table className="table table-hover">
@@ -140,7 +140,6 @@ export const Productos = () => {
                   <th>Codigo</th>
                   <th>Precio</th>
                   <th>Stock</th>
-                  <th>Acciones</th> {/* Agregamos la columna de acciones */}
                 </tr>
               </thead>
               <tbody>
@@ -151,14 +150,6 @@ export const Productos = () => {
                     <td>{producto.codigo}</td>
                     <td>{producto.precio}</td>
                     <td>{producto.stock}</td>
-                    <td>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => eliminarProducto(producto.id)} {/* Agregamos la función de eliminarProducto */}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
