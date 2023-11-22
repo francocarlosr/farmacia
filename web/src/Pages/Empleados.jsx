@@ -160,7 +160,7 @@ export const Empleados = () => {
                   </button>
                 </>
               ) : (
-                <button className="btn btn-success" onClick={agregarEmpleado}>
+                <button className="btn btn-primary" onClick={agregarEmpleado}>
                   Agregar
                 </button>
               )}
