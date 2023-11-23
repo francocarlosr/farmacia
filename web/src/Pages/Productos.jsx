@@ -11,7 +11,26 @@ export const Productos = () => {
   const [ingreseProduct, setIngreseProduct] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [allFieldsFilled, setAllFieldsFilled] = useState(false)
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
+
+  const handleNombreProdChange = (e) => {
+    setNombreProd(e.target.value);
+    checkAllFieldsFilled();
+  };
+
+  const handleCodigoProdChange = (e) => {
+    setCodigoProd(e.target.value);
+    checkAllFieldsFilled();
+  };
+
+  const handlePrecioProdChange = (e) => {
+    setPrecioProd(e.target.value);
+    checkAllFieldsFilled();
+  };
+
+  const checkAllFieldsFilled = () => {
+    setAllFieldsFilled(nombreProd.trim() !== '' && codigoProd.trim() !== '' && precioProd.trim() !== '');
+  };
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -19,8 +38,7 @@ export const Productos = () => {
 
   useEffect(() => {
     cargarProductos();
-  }, []);
-
+  }, [])
 
   const cargarProductos = async () => {
     try {
@@ -36,7 +54,7 @@ export const Productos = () => {
   const agregarProducto = async () => {
     try {
       // Check if any of the required fields is empty
-      if (!nombreProd.trim() || !codigoProd.trim() || !precioProd.trim()) {
+      if (!allFieldsFilled) {
         // Show a message or handle the case where not all fields are filled
         console.log("Please fill in all the required fields");
         return;
@@ -70,9 +88,7 @@ export const Productos = () => {
     } catch (error) {
       console.error("Error al agregar producto:", error);
     }
-  };
-
-  
+  }
 
   const buscarProducto = async () => {
     try {
@@ -120,7 +136,7 @@ export const Productos = () => {
               type="text"
               id="nombreProd"
               value={nombreProd}
-              onChange={(e) => setNombreProd(e.target.value)}
+              onChange={handleNombreProdChange}
               className="form-control"
             />
             <label htmlFor="codigoProd">Código:</label>
@@ -128,7 +144,7 @@ export const Productos = () => {
               type="text"
               id="codigoProd"
               value={codigoProd}
-              onChange={(e) => setCodigoProd(e.target.value)}
+              onChange={handleCodigoProdChange}
               className="form-control"
             />
             <label htmlFor="precioProd">Precio:</label>
@@ -136,7 +152,7 @@ export const Productos = () => {
               type="text"
               id="precioProd"
               value={precioProd}
-              onChange={(e) => setPrecioProd(e.target.value)}
+              onChange={handlePrecioProdChange}
               className="form-control"
             />
             <button
@@ -197,12 +213,12 @@ export const Productos = () => {
       </div>
 
       {showModal && (
-        <div className="modal" tabIndex="-1" role="dialog" style={{ display: "block"  }}>
+        <div className="modal" tabIndex="-1" role="dialog" style={{ display: "block", color: "white" }}>
           <div className="modal-dialog" role="document">
-            <div className="modal-content" style={{ backgroundColor: "black" , color: "white"}}>
+            <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" style={{ color: "white" }}>Mensaje</h5>
-                <button type="button" className="close" style={{ backgroundColor: "red" }} onClick={toggleModal}>
+                <h5 className="modal-title">Mensaje</h5>
+                <button type="button" className="close" onClick={toggleModal}>
                   <span>&times;</span>
                 </button>
               </div>
@@ -218,4 +234,4 @@ export const Productos = () => {
       )}
     </>
   );
-}
+};
