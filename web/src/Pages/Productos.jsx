@@ -74,8 +74,8 @@ export const Productos = () => {
 
   return (
     <>
-      <h1 className="container mt-4 text-center">Productos</h1>
-
+        <h1 className="container mt-4 text-center">Productos</h1>
+    
       <div className="container mt-4">
         <div className="row">
           <div className="col-md-6 mt-2">

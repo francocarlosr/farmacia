@@ -50,6 +50,7 @@ export const Empleados = () => {
     }
   };
 
+  
   const editarEmpleado = async () => {
     try {
       await axios.put(`http://localhost:3000/empleados/${idSeleccionado}`, {
