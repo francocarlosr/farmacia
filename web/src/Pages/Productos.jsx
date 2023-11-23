@@ -38,7 +38,7 @@ export const Productos = () => {
 
   useEffect(() => {
     cargarProductos();
-  }, [])
+  }, []);
 
   const cargarProductos = async () => {
     try {
