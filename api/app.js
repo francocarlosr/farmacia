@@ -4,7 +4,7 @@ import cors from "cors";
 
 import { comprasRouter } from "./src/rutas/compras.js";
 import { ventasRouter } from "./src/rutas/ventas.js";
-import { productoRouter } from "./src/rutas/producto.js";
+import { productosRouter } from "./src/rutas/productos.js";
 import { empleadosRouter } from "./src/rutas/empleados.js";
 import { authConfig, authRouter } from "./src/componentes/auth.js";
 
@@ -19,7 +19,7 @@ authConfig();
 app.use("/auth", authRouter);
 app.use("/compras", comprasRouter);
 app.use("/ventas", ventasRouter);
-app.use("/producto", productoRouter);
+app.use("/productos", productosRouter);
 app.use("/empleados", empleadosRouter);
 
 // Registrar metodo GET en ruta raiz ('/')

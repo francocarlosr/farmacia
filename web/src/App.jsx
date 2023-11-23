@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import { HomePage } from "./Pages/HomePage";
 import { Layout } from "./Pages/Layout";
-import { LoginPage } from "./Pages/LoginPage";
 import { Productos } from "./Pages/Productos";
+import { LoginPage } from "./Pages/LoginPage";
 import { Compras } from "./Pages/Compras";
 import { Ventas } from "./Pages/Ventas";
 import { Empleados } from "./Pages/Empleados";
