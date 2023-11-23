@@ -19,52 +19,27 @@ export const Compras = () => {
         headers: { Authorization: `Bearer ${sesion.token}` },
       });
       setCompras(response.data);
-<<<<<<< HEAD
-=======
       cargarCompras();
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
     } catch (error) {
       console.error("Error al cargar compras:", error);
     }
   };
 
   const agregarCompra = async () => {
-<<<<<<< HEAD
-=======
     
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
     try {
       const response = await axios.post(
         "http://localhost:3000/compras",
         {
-<<<<<<< HEAD
-          nuevaCompra: {
-            fecha: fechaComp,
-            proveedor: proveedorComp,
-          },
-=======
           nuevaCompra:{
           fecha: fechaComp,
           proveedor: proveedorComp,
           }
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
         },
         {
           headers: { Authorization: `Bearer ${sesion.token}` },
         }
       );
-<<<<<<< HEAD
-      setCompras((prevCompras) => [...prevCompras, response.data]);
-      setFechaComp("");
-      setProveedorComp("");
-      // Después de agregar la compra, actualiza la lista
-      cargarCompras();
-    } catch (error) {
-      console.error("Error al agregar compra:", error);
-    }
-  }; 
-
-=======
       setCompras([...compras, response.data]);
       setFechaComp("");
       setProveedorComp("");
@@ -72,7 +47,6 @@ export const Compras = () => {
       console.error("Error al agregar compra:", error);
     }
   };
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
   const eliminarCompra = async (id) => { 
     try { 
       await axios.delete(`http://localhost:3000/compras/${id}`,{ 
@@ -103,10 +77,7 @@ export const Compras = () => {
       console.error("Error al buscar compra:", error);
     }
   };
-<<<<<<< HEAD
-=======
   
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
 
   return (
     <>
@@ -154,13 +125,8 @@ export const Compras = () => {
               Buscar
             </button>
           </div>
-<<<<<<< HEAD
-          <div className="col-md-6">
-          <table className="table table-hover">
-=======
           <div className="col-md-6" style={{ overflow: 'auto', maxHeight: '400px' }}>
             <table className="table table-hover">
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
               <thead className="table-success">
                 <tr>
                   <th>Id</th>
@@ -182,15 +148,12 @@ export const Compras = () => {
                       > 
                         Eliminar 
                       </button> 
-<<<<<<< HEAD
-=======
                       <button 
                         className="btn btn-primary" 
                         onClick={() => verDetalle(compra.id)} 
                       > 
                         Detalle
                       </button>
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586
                     </td> 
 
                   </tr>
@@ -200,11 +163,6 @@ export const Compras = () => {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
-    </>
-  );
-}
-=======
       <br />
       <br />
       <h2 class="text-center">Detalles de Compra</h2>
@@ -296,4 +254,3 @@ export const Compras = () => {
     </>
   );
 };
->>>>>>> 1816db687941ae6cec4746dac5b6df3e4aea4586

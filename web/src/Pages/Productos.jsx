@@ -12,6 +12,7 @@ export const Productos = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [allFieldsFilled, setAllFieldsFilled] = useState(false)
+  const [editProductId, setEditProductId] = useState(null);
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -35,22 +36,18 @@ export const Productos = () => {
 
   const agregarProducto = async () => {
     try {
-      // Check if any of the required fields is empty
       if (!nombreProd.trim() || !codigoProd.trim() || !precioProd.trim()) {
-        // Show a message or handle the case where not all fields are filled
-        console.log("Please fill in all the required fields");
+        console.log("Por favor, complete todos los campos obligatorios");
         return;
       }
-
+  
       const existingProductByName = productos.find((producto) => producto.nombre === nombreProd);
       const existingProductByCode = productos.find((producto) => producto.codigo === codigoProd);
-
-      if (existingProductByName || existingProductByCode) {
-        setModalMessage("El producto ya existe");
-        toggleModal();
-      } else {
-        const response = await axios.post(
-          "http://localhost:3000/producto",
+  
+      if (editProductId) {
+        // Editar producto existente
+        await axios.put(
+          `http://localhost:3000/producto/${editProductId}`,
           {
             producto: {
               nombre: nombreProd,
@@ -62,13 +59,46 @@ export const Productos = () => {
             headers: { Authorization: `Bearer ${sesion.token}` },
           }
         );
-        setProductos([...productos, response.data]);
-        setNombreProd("");
-        setCodigoProd("");
-        setPrecioProd("");
+  
+        // Actualizar el estado de productos
+        const updatedProductos = productos.map((producto) =>
+          producto.id === editProductId
+            ? { ...producto, nombre: nombreProd, codigo: codigoProd, precio: precioProd }
+            : producto
+        );
+        setProductos(updatedProductos);
+  
+        // Limpiar el estado de edición
+        setEditProductId(null);
+      } else {
+        // Agregar nuevo producto
+        if (existingProductByName || existingProductByCode) {
+          setModalMessage("El producto ya existe");
+          toggleModal();
+        } else {
+          const response = await axios.post(
+            "http://localhost:3000/producto",
+            {
+              producto: {
+                nombre: nombreProd,
+                codigo: codigoProd,
+                precio: precioProd,
+              },
+            },
+            {
+              headers: { Authorization: `Bearer ${sesion.token}` },
+            }
+          );
+          setProductos([...productos, response.data]);
+        }
       }
+  
+      // Limpiar los campos después de agregar/editar
+      setNombreProd("");
+      setCodigoProd("");
+      setPrecioProd("");
     } catch (error) {
-      console.error("Error al agregar producto:", error);
+      console.error("Error al agregar/editar producto:", error);
     }
   };
 
@@ -92,11 +122,25 @@ export const Productos = () => {
     }
   };
 
+  const editarProducto = (id) => {
+    // Obtener el producto por ID
+    const producto = productos.find((p) => p.id === id);
+  
+    // Establecer los valores del producto en el formulario
+    setNombreProd(producto.nombre);
+    setCodigoProd(producto.codigo);
+    setPrecioProd(producto.precio);
+  
+    // Establecer el ID del producto a editar
+    setEditProductId(id);
+  };
+  
   const eliminarProducto = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/producto/${id}`, {
         headers: { Authorization: `Bearer ${sesion.token}` },
       });
+  
       const updatedProductos = productos.filter((producto) => producto.id !== id);
       setProductos(updatedProductos);
     } catch (error) {
@@ -144,8 +188,8 @@ export const Productos = () => {
               onClick={agregarProducto}
               disabled={!allFieldsFilled}
             >
-              Agregar
-            </button>
+            {editProductId ? "Editar" : "Agregar"}
+            </button> 
             <br />
             <br />
             <label htmlFor="ingreseProduct">Buscar:</label>
@@ -173,23 +217,29 @@ export const Productos = () => {
                 </tr>
               </thead>
               <tbody>
-                {productos.map((producto) => (
-                  <tr key={producto.id}>
-                    <td>{producto.id}</td>
-                    <td>{producto.nombre}</td>
-                    <td>{producto.codigo}</td>
-                    <td>{producto.precio}</td>
-                    <td>{producto.stock}</td>
-                    <td>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => eliminarProducto(producto.id)}
-                      >
-                        Eliminar
-                      </button>
+              {productos.map((producto) => (
+                <tr key={producto.id}>
+                  <td>{producto.id}</td>
+                  <td>{producto.nombre}</td>
+                  <td>{producto.codigo}</td>
+                  <td>{producto.precio}</td>
+                  <td>{producto.stock}</td>
+                  <td>
+                    <button
+                    className="btn btn-danger"
+                    onClick={() => eliminarProducto(producto.id)}
+                    >
+                    Eliminar
+                    </button>
+                    <button
+                    className="btn btn-warning"
+                    onClick={() => editarProducto(producto.id)}
+                    >
+                    Editar
+                    </button>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -219,3 +269,4 @@ export const Productos = () => {
     </>
   );
 }
+
