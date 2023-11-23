@@ -3,7 +3,6 @@ import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 
 export const Empleados = () => {
-  const [confirmPassword, setConfirmPassword] = useState('');
   const { sesion } = useAuthContext();
   const [empleados, setEmpleados] = useState([]);
   const [usuario, setUsuario] = useState("");
@@ -82,21 +81,7 @@ export const Empleados = () => {
       console.error("Error al eliminar empleado:", error);
     }
   };
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-  };
-  const handleSubmit = () => {
-    if (password === confirmPassword) {
-      // Las contraseñas coinciden, puedes proceder a agregar el registro
-      console.log('Contraseña válida, agregar registro');
-    } else {
-      // Las contraseñas no coinciden, puedes mostrar un mensaje de error o realizar alguna acción
-      console.log('Las contraseñas no coinciden');
-    }
-  };
+  
   const limpiarFormulario = () => {
     setIdSeleccionado(null);
     setUsuario("");
