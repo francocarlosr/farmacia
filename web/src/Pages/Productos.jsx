@@ -11,9 +11,8 @@ export const Productos = () => {
   const [ingreseProduct, setIngreseProduct] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [allFieldsFilled, setAllFieldsFilled] = useState(false)
+  const [allFieldsFilled, setAllFieldsFilled] = useState(true);
   const [editProductId, setEditProductId] = useState(null);
-
   const toggleModal = () => {
     setShowModal(!showModal);
   };
@@ -21,7 +20,6 @@ export const Productos = () => {
   useEffect(() => {
     cargarProductos();
   }, []);
-
 
   const cargarProductos = async () => {
     try {
@@ -36,14 +34,18 @@ export const Productos = () => {
 
   const agregarProducto = async () => {
     try {
-      if (!nombreProd.trim() || !codigoProd.trim() || !precioProd.trim()) {
+      /*if (!nombreProd.trim() || !codigoProd.trim() || !precioProd.trim()) {
         console.log("Por favor, complete todos los campos obligatorios");
         return;
-      }
-  
-      const existingProductByName = productos.find((producto) => producto.nombre === nombreProd);
-      const existingProductByCode = productos.find((producto) => producto.codigo === codigoProd);
-  
+      }*/
+
+      const existingProductByName = productos.find(
+        (producto) => producto.nombre === nombreProd
+      );
+      const existingProductByCode = productos.find(
+        (producto) => producto.codigo === codigoProd
+      );
+
       if (editProductId) {
         // Editar producto existente
         await axios.put(
@@ -59,15 +61,20 @@ export const Productos = () => {
             headers: { Authorization: `Bearer ${sesion.token}` },
           }
         );
-  
+
         // Actualizar el estado de productos
         const updatedProductos = productos.map((producto) =>
           producto.id === editProductId
-            ? { ...producto, nombre: nombreProd, codigo: codigoProd, precio: precioProd }
+            ? {
+                ...producto,
+                nombre: nombreProd,
+                codigo: codigoProd,
+                precio: precioProd,
+              }
             : producto
         );
         setProductos(updatedProductos);
-  
+
         // Limpiar el estado de edición
         setEditProductId(null);
       } else {
@@ -92,7 +99,7 @@ export const Productos = () => {
           setProductos([...productos, response.data]);
         }
       }
-  
+
       // Limpiar los campos después de agregar/editar
       setNombreProd("");
       setCodigoProd("");
@@ -101,8 +108,6 @@ export const Productos = () => {
       console.error("Error al agregar/editar producto:", error);
     }
   };
-
-  
 
   const buscarProducto = async () => {
     try {
@@ -124,24 +129,27 @@ export const Productos = () => {
 
   const editarProducto = (id) => {
     // Obtener el producto por ID
+    console.log(id)
     const producto = productos.find((p) => p.id === id);
-  
+    console.log(id)
     // Establecer los valores del producto en el formulario
     setNombreProd(producto.nombre);
     setCodigoProd(producto.codigo);
     setPrecioProd(producto.precio);
-  
+
     // Establecer el ID del producto a editar
     setEditProductId(id);
   };
-  
+
   const eliminarProducto = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/producto/${id}`, {
         headers: { Authorization: `Bearer ${sesion.token}` },
       });
-  
-      const updatedProductos = productos.filter((producto) => producto.id !== id);
+
+      const updatedProductos = productos.filter(
+        (producto) => producto.id !== id
+      );
       setProductos(updatedProductos);
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -188,8 +196,8 @@ export const Productos = () => {
               onClick={agregarProducto}
               disabled={!allFieldsFilled}
             >
-            {editProductId ? "Editar" : "Agregar"}
-            </button> 
+              {editProductId ? "Editar" : "Agregar"}
+            </button>
             <br />
             <br />
             <label htmlFor="ingreseProduct">Buscar:</label>
@@ -217,29 +225,29 @@ export const Productos = () => {
                 </tr>
               </thead>
               <tbody>
-              {productos.map((producto) => (
-                <tr key={producto.id}>
-                  <td>{producto.id}</td>
-                  <td>{producto.nombre}</td>
-                  <td>{producto.codigo}</td>
-                  <td>{producto.precio}</td>
-                  <td>{producto.stock}</td>
-                  <td>
-                    <button
-                    className="btn btn-danger"
-                    onClick={() => eliminarProducto(producto.id)}
-                    >
-                    Eliminar
-                    </button>
-                    <button
-                    className="btn btn-warning"
-                    onClick={() => editarProducto(producto.id)}
-                    >
-                    Editar
-                    </button>
+                {productos.map((producto) => (
+                  <tr key={producto.id}>
+                    <td>{producto.id}</td>
+                    <td>{producto.nombre}</td>
+                    <td>{producto.codigo}</td>
+                    <td>{producto.precio}</td>
+                    <td>{producto.stock}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => eliminarProducto(producto.id)}
+                      >
+                        Eliminar
+                      </button>
+                      <button
+                        className="btn btn-warning"
+                        onClick={() => editarProducto(producto.id)}
+                      >
+                        Editar
+                      </button>
                     </td>
-                    </tr>
-                    ))}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -269,4 +277,3 @@ export const Productos = () => {
     </>
   );
 }
-
