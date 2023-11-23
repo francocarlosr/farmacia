@@ -107,7 +107,9 @@ export const Empleados = () => {
   return (
     <>
       <div className="container mt-4">
-        <h2 className="mb-4">Empleados</h2>
+     
+        <h1 className="container mt-4 mb-4 text-center">Empleados</h1>
+      
         <div className="row">
           {/* Formulario */}
           <div className="col-md-6">
@@ -138,7 +140,7 @@ export const Empleados = () => {
                   value={rol}
                   onChange={(e) => setRol(e.target.value)}
                 >
-                  <option value="Rol">Selecciona un Rol</option>
+                  <option >Selecciona un Rol</option>
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -183,7 +185,7 @@ export const Empleados = () => {
             <table className="table table-hover">
               <thead className="table-success">
                 <tr>
-                  <th>Id</th>
+                  <th>ID</th>
                   <th>Usuario</th>
                   <th>Rol</th>
                   <th>Acciones</th>
