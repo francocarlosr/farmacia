@@ -11,6 +11,7 @@ export const Productos = () => {
   const [ingreseProduct, setIngreseProduct] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false)
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -19,6 +20,7 @@ export const Productos = () => {
   useEffect(() => {
     cargarProductos();
   }, []);
+
 
   const cargarProductos = async () => {
     try {
@@ -33,9 +35,16 @@ export const Productos = () => {
 
   const agregarProducto = async () => {
     try {
+      // Check if any of the required fields is empty
+      if (!nombreProd.trim() || !codigoProd.trim() || !precioProd.trim()) {
+        // Show a message or handle the case where not all fields are filled
+        console.log("Please fill in all the required fields");
+        return;
+      }
+
       const existingProductByName = productos.find((producto) => producto.nombre === nombreProd);
       const existingProductByCode = productos.find((producto) => producto.codigo === codigoProd);
-  
+
       if (existingProductByName || existingProductByCode) {
         setModalMessage("El producto ya existe");
         toggleModal();
@@ -62,6 +71,7 @@ export const Productos = () => {
       console.error("Error al agregar producto:", error);
     }
   };
+
   
 
   const buscarProducto = async () => {
@@ -129,7 +139,11 @@ export const Productos = () => {
               onChange={(e) => setPrecioProd(e.target.value)}
               className="form-control"
             />
-            <button className="btn btn-primary" onClick={agregarProducto}>
+            <button
+              className="btn btn-primary"
+              onClick={agregarProducto}
+              disabled={!allFieldsFilled}
+            >
               Agregar
             </button>
             <br />
@@ -183,7 +197,7 @@ export const Productos = () => {
       </div>
 
       {showModal && (
-        <div className="modal" tabIndex="-1" role="dialog" style={{ display: "block" }}>
+        <div className="modal" tabIndex="-1" role="dialog" style={{ display: "block"  }}>
           <div className="modal-dialog" role="document">
             <div className="modal-content" style={{ backgroundColor: "black" , color: "white"}}>
               <div className="modal-header">
@@ -204,4 +218,4 @@ export const Productos = () => {
       )}
     </>
   );
-};
+}

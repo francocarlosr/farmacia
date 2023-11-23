@@ -1,26 +1,23 @@
 import { useEffect, useState } from 'react';
-import { useAuthContext } from '../context/AuthContext';
 import axios from 'axios';
 
 export const Empleados = () => {
-  const { sesion } = useAuthContext();
   const [empleados, setEmpleados] = useState([]);
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [rol, setRol] = useState('');
   const [idSeleccionado, setIdSeleccionado] = useState(null);
-
-  useEffect(() => {
-    axios
-      .get('http://localhost:3000/empleados', {
-        headers: { Authorization: `Bearer ${sesion.token}` },
-      })
-      .then((response) => setEmpleados(response.data));
-  }, [sesion]);
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     cargarEmpleados();
   }, []);
+
+  useEffect(() => {
+    setIsButtonEnabled(!!usuario.trim() && !!password.trim() && !!rol.trim());
+  }, [usuario, password, rol]);
 
   const cargarEmpleados = async () => {
     try {
@@ -36,7 +33,7 @@ export const Empleados = () => {
       const response = await axios.get(`http://localhost:3000/empleados/${id}`);
       const empleado = response.data;
       setUsuario(empleado.usuario);
-      setPassword(empleado.password); // Asegúrate de manejar la contraseña de manera segura
+      setPassword(empleado.password);
       setRol(empleado.rol);
       setIdSeleccionado(id);
     } catch (error) {
@@ -46,11 +43,18 @@ export const Empleados = () => {
 
   const agregarEmpleado = async () => {
     try {
+      const existingUser = empleados.find((empleado) => empleado.usuario === usuario);
+      if (existingUser) {
+        setModalMessage('El usuario ya existe');
+        setShowModal(true);
+        return;
+      }
+
       const response = await axios.post(
         'http://localhost:3000/empleados',
         {
           usuario,
-          password, // Asegúrate de manejar la contraseña de manera segura
+          password,
           rol,
         }
       );
@@ -67,7 +71,7 @@ export const Empleados = () => {
         `http://localhost:3000/empleados/${idSeleccionado}`,
         {
           usuario,
-          password, // Asegúrate de manejar la contraseña de manera segura
+          password,
           rol,
         }
       );
@@ -99,76 +103,78 @@ export const Empleados = () => {
     setRol('');
   };
 
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <>
-        <div className="container mt-4">
-      <h2 className="mb-4">Empleados</h2>
-      <div className="row">
-        {/* Formulario */}
-        <div className="col-md-6">
-          <form>
-            <div className="mb-3">
-              <label htmlFor="usuario" className="form-label">
-                Usuario:
-              </label>
-              <input
-                type="text"
-                id="usuario"
-                className="form-control"
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-              />
-            </div>
+      <div className="container mt-4">
+        <h2 className="mb-4">Empleados</h2>
+        <div className="row">
+          <div className="col-md-6">
+            <form>
+              <div className="mb-3">
+                <label htmlFor="usuario" className="form-label">
+                  Usuario:
+                </label>
+                <input
+                  type="text"
+                  id="usuario"
+                  className="form-control"
+                  value={usuario}
+                  onChange={(e) => setUsuario(e.target.value)}
+                />
+              </div>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">
-                Contraseña:
-              </label>
-              <input
-                type="text"
-                id="password"
-                className="form-control"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">
+                  Contraseña:
+                </label>
+                <input
+                  type="text"
+                  id="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
 
-            <div className="mb-3">
-              <label htmlFor="rol" className="form-label">
-                Rol:
-              </label>
-              <input
-                type="text"
-                id="rol"
-                className="form-control"
-                value={rol}
-                onChange={(e) => setRol(e.target.value)}
-              />
-            </div>
+              <div className="mb-3">
+                <label htmlFor="rol" className="form-label">
+                  Rol:
+                </label>
+                <input
+                  type="text"
+                  id="rol"
+                  className="form-control"
+                  value={rol}
+                  onChange={(e) => setRol(e.target.value)}
+                />
+              </div>
 
-            <div className="d-grid gap-2">
-              {idSeleccionado ? (
-                <>
-                  <button className="btn btn-primary" onClick={editarEmpleado}>
-                    Aceptar
+              <div className="d-grid gap-2">
+                {idSeleccionado ? (
+                  <>
+                    <button className="btn btn-primary" onClick={editarEmpleado} disabled={!isButtonEnabled}>
+                      Aceptar
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => cargarDatosEmpleado(null)}
+                    >
+                      Cancelar
+                    </button>
+                  </>
+                ) : (
+                  <button className="btn btn-primary" onClick={agregarEmpleado} disabled={!isButtonEnabled}>
+                    Agregar
                   </button>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => cargarDatosEmpleado(null)}
-                  >
-                    Cancelar
-                  </button>
-                </>
-              ) : (
-                <button className="btn btn-primary" onClick={agregarEmpleado}>
-                  Agregar
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-  
-          {/* Tabla */}
+                )}
+              </div>
+            </form>
+          </div>
+
           <div className="col-md-6">
             <table className="table table-hover">
               <thead className="table-success">
@@ -206,6 +212,27 @@ export const Empleados = () => {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content" style={{ backgroundColor: 'black', color: 'white' }}>
+              <div className="modal-header">
+                <h5 className="modal-title" style={{ color: 'white' }}>Mensaje</h5>
+                <button type="button" className="close" style={{ backgroundColor: 'red' }} onClick={closeModal}>
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">{modalMessage}</div>
+              <div className="modal-footer d-flex justify-content-center">
+                <button type="button" className="btn btn-primary" onClick={closeModal}>
+                  Intentar nuevamente
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
-}
+};
