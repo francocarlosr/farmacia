@@ -4,14 +4,15 @@ import { useForm } from "react-hook-form";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export const Productos = () => {
-  const { register, handleSubmit , errors, control } = useForm();
-  const [mostrarFormularioAgregar, setMostrarFormularioAgregar] = useState(true);
+  const { handleSubmit } = useForm();
+  const [mostrarFormularioAgregar, setMostrarFormularioAgregar] =
+    useState(true);
   const [productos, setProductos] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre: "",
     codigo: "",
-    precio: ""
+    precio: "",
   });
   useEffect(() => {
     cargarProductos();
@@ -82,185 +83,177 @@ export const Productos = () => {
     }
   };
 
-    
   return (
     <>
-    <div className="container mt-4 text-center">
-      <h1>Productos</h1>
-    </div>
-    <div className="container mt-4">
-      
-      <div className="row">
-        <div className="col-md-6 mt-2">
-         
-
-          {(mostrarFormularioAgregar || productoSeleccionado) && (
-            <div>
-              <h4>
-                {productoSeleccionado ? "Editar Producto" : "Agregar Producto"}
-              </h4>
-              <form
-                onSubmit={handleSubmit(
-                  productoSeleccionado ? actualizarProducto : agregarProducto
-                )}
-              >
-                <div className="form-group">
-                  
-                  <input
-                    type="text"
-                    className="form-control mt-2"
-                    value={
-                      productoSeleccionado
-                        ? productoSeleccionado.nombre
-                        : nuevoProducto.nombre
-                    }
-                    onChange={(e) => {
-                      if (productoSeleccionado) {
-                        setProductoSeleccionado({
-                          ...productoSeleccionado,
-                          nombre: e.target.value,
-                        });
-                      } else {
-                        setNuevoProducto({
-                          ...nuevoProducto,
-                          nombre: e.target.value,
-                        });
+      <div className="container mt-4 text-center">
+        <h1>Productos</h1>
+      </div>
+      <div className="container mt-4">
+        <div className="row">
+          <div className="col-md-6 mt-2">
+            {(mostrarFormularioAgregar || productoSeleccionado) && (
+              <div>
+                <h4>
+                  {productoSeleccionado
+                    ? "Editar Producto"
+                    : "Agregar Producto"}
+                </h4>
+                <form
+                  onSubmit={handleSubmit(
+                    productoSeleccionado ? actualizarProducto : agregarProducto
+                  )}
+                >
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={
+                        productoSeleccionado
+                          ? productoSeleccionado.nombre
+                          : nuevoProducto.nombre
                       }
-                    }}
-                    placeholder="Nombre"
-                  />
-                </div>
-                <div className="form-group">
-                  
-                  <input
-                    type="text"
-                    className="form-control mt-2"
-                    value={
-                      productoSeleccionado
-                        ? productoSeleccionado.codigo
-                        : nuevoProducto.codigo
-                    }
-                    onChange={(e) => {
-                      if (productoSeleccionado) {
-                        setProductoSeleccionado({
-                          ...productoSeleccionado,
-                          codigo: e.target.value,
-                        });
-                      } else {
-                        setNuevoProducto({
-                          ...nuevoProducto,
-                          codigo: e.target.value,
-                        });
+                      onChange={(e) => {
+                        if (productoSeleccionado) {
+                          setProductoSeleccionado({
+                            ...productoSeleccionado,
+                            nombre: e.target.value,
+                          });
+                        } else {
+                          setNuevoProducto({
+                            ...nuevoProducto,
+                            nombre: e.target.value,
+                          });
+                        }
+                      }}
+                      placeholder="Nombre"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={
+                        productoSeleccionado
+                          ? productoSeleccionado.codigo
+                          : nuevoProducto.codigo
                       }
-                    }}
-                    placeholder="Código"
-                  />
-                </div>
-                <div className="form-group">
-                  
-                  <input 
-                    type="text"
-                    className="form-control mt-2"
-                    value={
-                      productoSeleccionado
-                        ? productoSeleccionado.precio
-                        : nuevoProducto.precio
-                    }
-                    onChange={(e) => {
-                      if (productoSeleccionado) {
-                        setProductoSeleccionado({
-                          ...productoSeleccionado,
-                          precio: e.target.value,
-                        });
-                      } else {
-                        setNuevoProducto({
-                          ...nuevoProducto,
-                          precio: e.target.value,
-                        });
+                      onChange={(e) => {
+                        if (productoSeleccionado) {
+                          setProductoSeleccionado({
+                            ...productoSeleccionado,
+                            codigo: e.target.value,
+                          });
+                        } else {
+                          setNuevoProducto({
+                            ...nuevoProducto,
+                            codigo: e.target.value,
+                          });
+                        }
+                      }}
+                      placeholder="Código"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control mt-2"
+                      value={
+                        productoSeleccionado
+                          ? productoSeleccionado.precio
+                          : nuevoProducto.precio
                       }
-                    }}
-                    placeholder="Precio"
-                  />
-                </div>
-
-                <button type="submit" className="btn btn-success mt-2">
-                  {productoSeleccionado ? "Actualizar" : "Agregar"}
-                </button>
-                {productoSeleccionado && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary mt-2"
-                    onClick={() => setProductoSeleccionado(null)}
-                  >
-                    Cancelar
+                      onChange={(e) => {
+                        if (productoSeleccionado) {
+                          setProductoSeleccionado({
+                            ...productoSeleccionado,
+                            precio: e.target.value,
+                          });
+                        } else {
+                          setNuevoProducto({
+                            ...nuevoProducto,
+                            precio: e.target.value,
+                          });
+                        }
+                      }}
+                      placeholder="Precio"
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-success mt-2 mr-2">
+                    {productoSeleccionado ? "Actualizar" : "Agregar"}
                   </button>
-                )}
-              </form>
-            </div>
-          )}
-        </div>
-
-        <div className="col-md-6">
-          
-          <form onSubmit={(e) => e.preventDefault()} className="mt-2">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                onChange={(e) => buscarProductoPorNombre(e.target.value)}
-                placeholder="Buscar por nombre"
-              />
-              <div className="input-group-append">
-                <button className="btn btn-outline-secondary" type="button">
-                  Buscar
-                </button>
+                  {productoSeleccionado && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary mt-2"
+                      onClick={() => setProductoSeleccionado(null)}
+                    >
+                      Cancelar
+                    </button>
+              
+                  )}
+                </form>
               </div>
-            </div>
-          </form>
-          <table className="table mt-2">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-      
-            <tbody>
-              {productos.map((producto) => (
-                <tr key={producto.id}>
-                
-                  <td>{producto.id}</td>
-                  <td>{producto.nombre}</td>
-                  <td>{producto.codigo}</td>
-                  <td>{producto.precio}</td>
-                  <td>{producto.stock}</td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => cargarProductoPorId(producto.id)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => eliminarProducto(producto.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+            )}
+          </div>
+
+          <div className="col-md-6">
+            <form onSubmit={(e) => e.preventDefault()} className="mt-2">
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  onChange={(e) => buscarProductoPorNombre()}
+                  placeholder="Buscar por nombre"
+                />
+                <div className="input-group-append">
+                  <button className="btn btn-outline-secondary" type="button">
+                    Buscar
+                  </button>
+                </div>
+              </div>
+            </form>
+            <table className="table table-hover mt-3">
+              <thead className="table-success mt-2">
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Código</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {productos.map((producto) => (
+                  <tr key={producto.id}>
+                    <td>{producto.id}</td>
+                    <td>{producto.nombre}</td>
+                    <td>{producto.codigo}</td>
+                    <td>{producto.precio}</td>
+                    <td>{producto.stock}</td>
+                    <td>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => cargarProductoPorId(producto.id)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => eliminarProducto(producto.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
- 
 };
 export default Productos;
