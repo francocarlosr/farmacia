@@ -36,17 +36,6 @@ export const Productos = () => {
     }
   };
 
-  const buscarProductoPorNombre = async (nombre) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/productos/filtro/?nombre=${nombre}`
-      );
-      setProductos(response.data);
-    } catch (error) {
-      console.error(`Error al buscar productos por nombre ${nombre}:`, error);
-    }
-  };
-
   const agregarProducto = async () => {
     try {
       await axios.post("http://localhost:3000/productos", nuevoProducto);
@@ -189,7 +178,6 @@ export const Productos = () => {
                     >
                       Cancelar
                     </button>
-              
                   )}
                 </form>
               </div>
@@ -197,21 +185,6 @@ export const Productos = () => {
           </div>
 
           <div className="col-md-6">
-            <form onSubmit={(e) => e.preventDefault()} className="mt-2">
-              <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control"
-                  onChange={(e) => buscarProductoPorNombre()}
-                  placeholder="Buscar por nombre"
-                />
-                <div className="input-group-append">
-                  <button className="btn btn-outline-secondary" type="button">
-                    Buscar
-                  </button>
-                </div>
-              </div>
-            </form>
             <table className="table table-hover mt-3">
               <thead className="table-success mt-2">
                 <tr>

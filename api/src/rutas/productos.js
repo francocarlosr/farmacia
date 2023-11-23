@@ -45,44 +45,6 @@ export const productosRouter = express.Router()
   }
 })
 
-  .get(
-    "/filtro/",
-    query("nombre").isLength({ min: 1, max: 45 }),
-    async (req, res) => {
-      const validacion = validationResult(req);
-      if (!validacion.isEmpty()) {
-        res.status(400).send({ errors: validacion.array() });
-        return;
-      }
-
-      try {
-        let query = "SELECT * FROM producto WHERE 1=1";
-        const conditions = [];
-        const params = [];
-
-        // Ejemplo de búsqueda por nombre
-        if (req.query.nombre) {
-          conditions.push("nombre = ?");
-          params.push(req.query.nombre);
-        }
-
-        if (conditions.length > 0) {
-          query += ` AND ${conditions.join(" AND ")}`;
-        }
-
-        const [rows, fields] = await db.execute(query, params);
-        if (rows.length > 0) {
-          res.send(rows);
-        } else {
-          res.status(404).send({ mensaje: "Producto no encontrado" });
-        }
-      } catch (error) {
-        console.error("Error al obtener productos:", error);
-        res.status(500).send({ mensaje: "Error interno del servidor" });
-      }
-    }
-  )
-
   .post("/", validateNewProducto, async (req, res) => {
     try {
       const { nombre, codigo, precio } = req.body;
