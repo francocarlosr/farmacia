@@ -12,7 +12,6 @@ export const Productos = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
-  const [disableAgregarButton, setDisableAgregarButton] = useState(true); // Cambié el estado inicial a true
 
   const handleNombreProdChange = (e) => {
     setNombreProd(e.target.value);
@@ -30,9 +29,7 @@ export const Productos = () => {
   };
 
   const checkAllFieldsFilled = () => {
-    const fieldsFilled = nombreProd.trim() !== '' && codigoProd.trim() !== '' && precioProd.trim() !== '';
-    setAllFieldsFilled(fieldsFilled);
-    setDisableAgregarButton(!fieldsFilled); // Cambié la lógica para desactivar el botón
+    setAllFieldsFilled(nombreProd.trim() !== '' && codigoProd.trim() !== '' && precioProd.trim() !== '');
   };
 
   const toggleModal = () => {
@@ -87,7 +84,6 @@ export const Productos = () => {
         setNombreProd("");
         setCodigoProd("");
         setPrecioProd("");
-        setDisableAgregarButton(true); // Desactivar el botón después de agregar el producto
       }
     } catch (error) {
       console.error("Error al agregar producto:", error);
@@ -162,7 +158,7 @@ export const Productos = () => {
             <button
               className="btn btn-primary"
               onClick={agregarProducto}
-              disabled={disableAgregarButton}
+              disabled={!allFieldsFilled}
             >
               Agregar
             </button>

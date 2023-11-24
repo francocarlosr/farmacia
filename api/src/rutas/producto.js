@@ -61,4 +61,4 @@ export const productoRouter = express
    const id = req.params.id;
    await db.execute("DELETE FROM producto WHERE id=:id", { id });
    res.send("ok");
-})
+});
