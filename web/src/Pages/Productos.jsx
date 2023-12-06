@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 
@@ -11,28 +11,65 @@ export const Productos = () => {
   const [ingreseProduct, setIngreseProduct] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [nombreError, setNombreError] = useState("");
+  const [codigoError, setCodigoError] = useState("");
+  const [precioError, setPrecioError] = useState("");
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
-  const [disableAgregarButton, setDisableAgregarButton] = useState(true); // Cambié el estado inicial a true
+  const [disableAgregarButton, setDisableAgregarButton] = useState(true);
 
   const handleNombreProdChange = (e) => {
-    setNombreProd(e.target.value);
+    const value = e.target.value;
+
+    // Validación de nombre
+    const isValidNombre = /^[a-zA-Z\s]{1,30}$/.test(value);
+    setNombreProd(value);
+
+    if (!isValidNombre && value.trim() !== "") {
+      setNombreError("Nombre inválido. Solo se permiten letras y espacios, máximo 30 caracteres.");
+    } else {
+      setNombreError("");
+    }
+
     checkAllFieldsFilled();
   };
 
   const handleCodigoProdChange = (e) => {
-    setCodigoProd(e.target.value);
+    const value = e.target.value;
+
+    // Validación de código
+    const isValidCodigo = /^\d{5,10}$/.test(value);
+    setCodigoProd(value);
+
+    if (!isValidCodigo && value.trim() !== "") {
+      setCodigoError("Código inválido. Debe contener entre 5 y 10 dígitos.");
+    } else {
+      setCodigoError("");
+    }
+
     checkAllFieldsFilled();
   };
 
   const handlePrecioProdChange = (e) => {
-    setPrecioProd(e.target.value);
+    const value = e.target.value;
+  
+    // Validación de precio
+    const isValidPrecio = /^(\d+|\d+\.\d*|\d*\.\d+)$/.test(value);
+    setPrecioProd(value);
+  
+    if (!isValidPrecio && value.trim() !== "") {
+      setPrecioError("Precio inválido. Ingrese un número entero o un numero decimal con punto.");
+    } else {
+      setPrecioError("");
+    }
+  
     checkAllFieldsFilled();
   };
+  
 
   const checkAllFieldsFilled = () => {
-    const fieldsFilled = nombreProd.trim() !== '' && codigoProd.trim() !== '' && precioProd.trim() !== '';
+    const fieldsFilled = nombreProd.trim() !== "" && codigoProd.trim() !== "" && precioProd.trim() !== "";
     setAllFieldsFilled(fieldsFilled);
-    setDisableAgregarButton(!fieldsFilled); // Cambié la lógica para desactivar el botón
+    setDisableAgregarButton(!fieldsFilled);
   };
 
   const toggleModal = () => {
@@ -58,8 +95,13 @@ export const Productos = () => {
     try {
       // Check if any of the required fields is empty
       if (!allFieldsFilled) {
-        // Show a message or handle the case where not all fields are filled
         console.log("Please fill in all the required fields");
+        return;
+      }
+
+      if (nombreError || codigoError || precioError) {
+        // No permite agregar si hay errores de validación
+        console.log("Please fix validation errors");
         return;
       }
 
@@ -87,12 +129,12 @@ export const Productos = () => {
         setNombreProd("");
         setCodigoProd("");
         setPrecioProd("");
-        setDisableAgregarButton(true); // Desactivar el botón después de agregar el producto
+        setDisableAgregarButton(true);
       }
     } catch (error) {
       console.error("Error al agregar producto:", error);
     }
-  }
+  };
 
   const buscarProducto = async () => {
     try {
@@ -141,24 +183,39 @@ export const Productos = () => {
               id="nombreProd"
               value={nombreProd}
               onChange={handleNombreProdChange}
-              className="form-control"
+              className={`form-control ${nombreError ? 'is-invalid' : ''}`}
             />
+            {nombreError && (
+              <div className="invalid-feedback">
+                {nombreError}
+              </div>
+            )}
             <label htmlFor="codigoProd">Código:</label>
             <input
               type="text"
               id="codigoProd"
               value={codigoProd}
               onChange={handleCodigoProdChange}
-              className="form-control"
+              className={`form-control ${codigoError ? 'is-invalid' : ''}`}
             />
+            {codigoError && (
+              <div className="invalid-feedback">
+                {codigoError}
+              </div>
+            )}
             <label htmlFor="precioProd">Precio:</label>
             <input
               type="text"
               id="precioProd"
               value={precioProd}
               onChange={handlePrecioProdChange}
-              className="form-control"
+              className={`form-control ${precioError ? 'is-invalid' : ''}`}
             />
+            {precioError && (
+              <div className="invalid-feedback">
+                {precioError}
+              </div>
+            )}
             <button
               className="btn btn-primary"
               onClick={agregarProducto}
