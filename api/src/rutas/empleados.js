@@ -23,12 +23,26 @@ export const empleadosRouter = express
         res.status(400).send({ errors: validacion.array() });
         return;
       }
+
       const { usuario, password, rol, personaId } = req.body;
+
+      // Verificar si ya existe un usuario con el mismo nombre
+      const [existingUser] = await db.execute(
+        "SELECT * FROM empleado WHERE usuario = :usuario",
+        { usuario }
+      );
+
+      if (existingUser.length > 0) {
+        res.status(400).send({ mensaje: "Ya existe un usuario con ese nombre" });
+        return;
+      }
+
       const passwordHashed = await bcrypt.hash(password, 8);
       const [rows] = await db.execute(
         "INSERT INTO empleado (usuario, password, rol) VALUES (:usuario, :password, :rol)",
-        { usuario, password: passwordHashed, rol}
+        { usuario, password: passwordHashed, rol }
       );
+
       res.status(201).send({ id: rows.insertId, usuario, rol });
     }
   )
@@ -81,7 +95,6 @@ export const empleadosRouter = express
       res.send({ mensaje: "Empleado actualizado correctamente" });
     }
   )
-
   .get(
     "/filtro/",
     query("usuario").isLength({ min: 2, max: 50 }),
@@ -122,7 +135,6 @@ export const empleadosRouter = express
     );
     res.send(rows);
   })
-
   .get("/:id", async (req, res) => {
     const { id } = req.params;
     const [rows, fields] = await db.execute(
@@ -135,7 +147,6 @@ export const empleadosRouter = express
       res.status(404).send({ mensaje: "empleado no encontrado" });
     }
   })
-
   .delete("/:id", param("id").isInt({ min: 1 }), async (req, res) => {
     const { id } = req.params;
     await db.execute("DELETE FROM empleado WHERE id = :id", { id });

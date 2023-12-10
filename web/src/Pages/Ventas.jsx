@@ -7,12 +7,17 @@ export const Ventas = () => {
   const [ventas, setVentas] = useState([]);
   const [fechaVenta, setFechaVenta] = useState("");
   const [clienteVenta, setClienteVenta] = useState("");
-  const [ingreseVenta, setIngreseVenta] = useState("");
   const [empleado_id, setEmpleado_id] = useState("");
+  const [productos, setProductos] = useState([]);
+  const [detallesVenta, setDetallesVenta] = useState([]);
+  const [ingreseVenta, setIngreseVenta] = useState("");
+  const [totalVenta, setTotalVenta] = useState(0);
 
   useEffect(() => {
     cargarVentas();
-  }, []);
+    cargarProductos();
+    calcularTotalVenta();
+  }, [detallesVenta]);
 
   const cargarVentas = async () => {
     try {
@@ -24,7 +29,42 @@ export const Ventas = () => {
       console.error("Error al cargar ventas:", error.response);
     }
   };
-  
+
+  const cargarProductos = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/producto", {
+        headers: { Authorization: `Bearer ${sesion.token}` },
+      });
+      setProductos(response.data);
+    } catch (error) {
+      console.error("Error al cargar productos:", error.response);
+    }
+  };
+
+  const agregarDetalleVenta = (producto) => {
+    const cantidad = prompt(`Ingrese la cantidad de ${producto.nombre}:`);
+    if (cantidad && !isNaN(cantidad) && cantidad > 0) {
+      const detalle = {
+        producto_id: producto.id,
+        cantidad: parseInt(cantidad),
+        nombre: producto.nombre,
+        precio: producto.precio,
+        stock: producto.stock,
+        proveedor: producto.proveedor,
+        precioTotal: parseInt(cantidad) * producto.precio,
+      };
+      setDetallesVenta((prevDetalles) => [...prevDetalles, detalle]);
+    }
+  };
+
+  const calcularTotalVenta = () => {
+    const total = detallesVenta.reduce(
+      (total, detalle) => total + detalle.precioTotal,
+      0
+    );
+    setTotalVenta(total);
+  };
+
   const agregarVenta = async () => {
     try {
       const response = await axios.post(
@@ -35,6 +75,7 @@ export const Ventas = () => {
             cliente: clienteVenta,
             empleado_id: empleado_id,
           },
+          detallesVenta: detallesVenta,
         },
         {
           headers: { Authorization: `Bearer ${sesion.token}` },
@@ -43,12 +84,13 @@ export const Ventas = () => {
       setVentas((prevVentas) => [...prevVentas, response.data]);
       setFechaVenta("");
       setClienteVenta("");
-      cargarVentas();
+      setEmpleado_id("");
+      setDetallesVenta([]);
+      // No es necesario cargarVentas aquí, ya se actualiza con setVentas
     } catch (error) {
       console.error("Error al agregar venta:", error.response);
     }
   };
-  
 
   const eliminarVenta = async (id) => {
     try {
@@ -87,6 +129,19 @@ export const Ventas = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-6">
+            <label htmlFor="ingreseVenta">Buscar por ID:</label>
+            <input
+              type="text"
+              id="ingreseVenta"
+              value={ingreseVenta}
+              onChange={(e) => setIngreseVenta(e.target.value)}
+              className="form-control"
+            />
+            <button className="btn btn-primary" onClick={buscarVenta}>
+              Buscar
+            </button>
+            <br />
+            <br />
             <button className="btn btn-primary" onClick={cargarVentas}>
               Refrescar Tabla
             </button>
@@ -108,7 +163,7 @@ export const Ventas = () => {
               onChange={(e) => setClienteVenta(e.target.value)}
               className="form-control"
             />
-            <label htmlFor="descripcion">ID empleado:</label>
+            <label htmlFor="empleado_id">ID empleado:</label>
             <input
               type="text"
               id="empleado_id"
@@ -116,21 +171,35 @@ export const Ventas = () => {
               onChange={(e) => setEmpleado_id(e.target.value)}
               className="form-control"
             />
-            <button className="btn btn-primary" onClick={agregarVenta}>
-              Agregar
-            </button>
             <br />
             <br />
-            <label htmlFor="ingreseVenta">Buscar por ID:</label>
-            <input
-              type="text"
-              id="ingreseVenta"
-              value={ingreseVenta}
-              onChange={(e) => setIngreseVenta(e.target.value)}
-              className="form-control"
-            />
-            <button className="btn btn-primary" onClick={buscarVenta}>
-              Buscar
+            <div className="row">
+              <div className="col-md-6">
+                <label htmlFor="seleccionarProducto">Seleccionar Producto:</label>
+                <select
+                  id="seleccionarProducto"
+                  className="form-select"
+                  onChange={(e) =>
+                    agregarDetalleVenta(
+                      productos.find(
+                        (producto) => producto.id === parseInt(e.target.value)
+                      )
+                    )
+                  }
+                >
+                  <option value="">Seleccionar Producto</option>
+                  {productos.map((producto) => (
+                    <option key={producto.id} value={producto.id}>
+                      {producto.nombre} - Precio: {producto.precio}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <br />
+            <br />
+            <button className="btn btn-success" onClick={agregarVenta}>
+              Vender
             </button>
           </div>
           <div className="col-md-6">
@@ -140,7 +209,7 @@ export const Ventas = () => {
                   <th>Id</th>
                   <th>Fecha</th>
                   <th>Cliente</th>
-                  <th>empleado</th>
+                  <th>Empleado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -163,6 +232,36 @@ export const Ventas = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <h3>Detalles de Venta</h3>
+            <table className="table table-hover">
+              <thead className="table-success">
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Precio Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {detallesVenta.map((detalle, index) => (
+                  <tr key={index}>
+                    <td>{detalle.nombre}</td>
+                    <td>{detalle.cantidad}</td>
+                    <td>{detalle.precio}</td>
+                    <td>{detalle.precioTotal}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <h3>Total Venta: {totalVenta}</h3>
           </div>
         </div>
       </div>

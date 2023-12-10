@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import axios from "axios";
 
 export const Empleados = () => {
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { sesion } = useAuthContext();
   const [empleados, setEmpleados] = useState([]);
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("");
   const [idSeleccionado, setIdSeleccionado] = useState(false);
+  const [usuarioError, setUsuarioError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     cargarEmpleados();
@@ -37,8 +39,55 @@ export const Empleados = () => {
     }
   };
 
+  const handleUsuarioChange = (e) => {
+    const value = e.target.value;
+
+    // Validación de usuario
+    const isValidUsuario = /^[a-zA-Z0-9]+$/.test(value);
+    setUsuario(value);
+
+    if (!isValidUsuario && value.trim() !== "") {
+      setUsuarioError("Usuario inválido. Solo se permiten letras y números.");
+    } else {
+      setUsuarioError("");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+
+    // Validación de contraseña
+    const isValidPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,15}$/.test(value);
+    setPassword(value);
+
+    if (!isValidPassword && value.trim() !== "") {
+      setPasswordError("Contraseña inválida. Debe tener entre 8 y 15 caracteres, al menos una letra mayúscula y un número.");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const handleSubmit = () => {
+    if (password === confirmPassword) {
+      // Las contraseñas coinciden, puedes proceder a agregar el registro
+      console.log('Contraseña válida, agregar registro');
+    } else {
+      // Las contraseñas no coinciden, puedes mostrar un mensaje de error o realizar alguna acción
+      console.log('Las contraseñas no coinciden');
+    }
+  };
+
   const agregarEmpleado = async () => {
     try {
+      // Verificar si el usuario ya existe
+      const usuarioExistente = empleados.find((empleado) => empleado.usuario === usuario);
+      if (usuarioExistente) {
+        // Mostrar mensaje en ventana modal o alert
+        alert("Este usuario ya existe");
+        return;
+      }
+
+      // El usuario no existe, proceder a agregarlo
       const response = await axios.post("http://localhost:3000/empleados", {
         usuario,
         password, // hay que poner el coso para manejar la contraseña de manera segura
@@ -82,21 +131,7 @@ export const Empleados = () => {
       console.error("Error al eliminar empleado:", error);
     }
   };
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-  };
-  const handleSubmit = () => {
-    if (password === confirmPassword) {
-      // Las contraseñas coinciden, puedes proceder a agregar el registro
-      console.log('Contraseña válida, agregar registro');
-    } else {
-      // Las contraseñas no coinciden, puedes mostrar un mensaje de error o realizar alguna acción
-      console.log('Las contraseñas no coinciden');
-    }
-  };
+
   const limpiarFormulario = () => {
     setIdSeleccionado(null);
     setUsuario("");
@@ -107,30 +142,47 @@ export const Empleados = () => {
   return (
     <>
       <div className="container mt-4">
-     
         <h1 className="container mt-4 mb-4 text-center">Empleados</h1>
-      
         <div className="row">
-          {/* Formulario */}
           <div className="col-md-6">
             <form>
               <div className="mb-3">
                 <input
                   type="text"
                   placeholder="Usuario"
-                  className="form-control"
+                  className={`form-control ${usuarioError ? 'is-invalid' : ''}`}
                   value={usuario}
-                  onChange={(e) => setUsuario(e.target.value)}
+                  onChange={handleUsuarioChange}
                 />
+                {usuarioError && (
+                  <div className="invalid-feedback">
+                    {usuarioError}
+                  </div>
+                )}
               </div>
 
               <div className="mb-3">
                 <input
                   type="password"
                   placeholder="Contraseña"
-                  className="form-control"
+                  className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
+                />
+                {passwordError && (
+                  <div className="invalid-feedback">
+                    {passwordError}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-3">
+                <input
+                  type="password"
+                  placeholder="Confirmar Contraseña"
+                  className="form-control"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
 
@@ -140,7 +192,7 @@ export const Empleados = () => {
                   value={rol}
                   onChange={(e) => setRol(e.target.value)}
                 >
-                  <option >Selecciona un Rol</option>
+                  <option>Selecciona un Rol</option>
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -180,7 +232,6 @@ export const Empleados = () => {
             </form>
           </div>
 
-          {/* Tabla */}
           <div className="col-md-6">
             <table className="table table-hover">
               <thead className="table-success">

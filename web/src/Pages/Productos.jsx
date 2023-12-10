@@ -51,20 +51,19 @@ export const Productos = () => {
 
   const handlePrecioProdChange = (e) => {
     const value = e.target.value;
-  
+
     // Validación de precio
     const isValidPrecio = /^(\d+|\d+\.\d*|\d*\.\d+)$/.test(value);
     setPrecioProd(value);
-  
+
     if (!isValidPrecio && value.trim() !== "") {
-      setPrecioError("Precio inválido. Ingrese un número entero o un numero decimal con punto.");
+      setPrecioError("Precio inválido. Ingrese un número entero o un número decimal con punto.");
     } else {
       setPrecioError("");
     }
-  
+
     checkAllFieldsFilled();
   };
-  
 
   const checkAllFieldsFilled = () => {
     const fieldsFilled = nombreProd.trim() !== "" && codigoProd.trim() !== "" && precioProd.trim() !== "";
@@ -93,44 +92,50 @@ export const Productos = () => {
 
   const agregarProducto = async () => {
     try {
-      // Check if any of the required fields is empty
+      // Verificar si alguno de los campos obligatorios está vacío
       if (!allFieldsFilled) {
-        console.log("Please fill in all the required fields");
+        alert("Por favor complete todos los campos obligatorios");
         return;
       }
-
+  
       if (nombreError || codigoError || precioError) {
         // No permite agregar si hay errores de validación
-        console.log("Please fix validation errors");
+        alert("Corrija los errores de validación antes de agregar el producto");
         return;
       }
-
+  
       const existingProductByName = productos.find((producto) => producto.nombre === nombreProd);
       const existingProductByCode = productos.find((producto) => producto.codigo === codigoProd);
-
+  
       if (existingProductByName || existingProductByCode) {
-        setModalMessage("El producto ya existe");
+        const errorMessage = existingProductByName
+          ? "Ya existe un producto con el mismo nombre."
+          : "Ya existe un producto con el mismo código.";
+        setModalMessage(errorMessage);
         toggleModal();
-      } else {
-        const response = await axios.post(
-          "http://localhost:3000/producto",
-          {
-            producto: {
-              nombre: nombreProd,
-              codigo: codigoProd,
-              precio: precioProd,
-            },
-          },
-          {
-            headers: { Authorization: `Bearer ${sesion.token}` },
-          }
-        );
-        setProductos([...productos, response.data]);
-        setNombreProd("");
-        setCodigoProd("");
-        setPrecioProd("");
-        setDisableAgregarButton(true);
+        return; // Salir de la función si el producto ya existe
       }
+  
+      const response = await axios.post(
+        "http://localhost:3000/producto",
+        {
+          producto: {
+            nombre: nombreProd,
+            codigo: codigoProd,
+            precio: precioProd,
+          },
+        },
+        {
+          headers: { Authorization: `Bearer ${sesion.token}` },
+        }
+      );
+  
+      // Actualizar el estado con la respuesta del servidor
+      setProductos((prevProductos) => [...prevProductos, response.data]);
+      setNombreProd("");
+      setCodigoProd("");
+      setPrecioProd("");
+      setDisableAgregarButton(true);
     } catch (error) {
       console.error("Error al agregar producto:", error);
     }
