@@ -64,7 +64,8 @@ export const comprasRouter = express
   })
 
 // Agregar nuevo detalle de compra
-  .post("/detallecompra", async (req, res) => {
+  .post("/:id/detallecompra", async (req, res) => {
+    const { id } = req.params;
     const nuevoDetalle = req.body.nuevoDetalle;
     const [rows] = await db.execute(
       "INSERT INTO detallecompra (cantidad, precio, producto_id, compra_id) VALUES (:cantidad, :precio, :producto_id, :compra_id)",
@@ -72,7 +73,7 @@ export const comprasRouter = express
         cantidad: nuevoDetalle.cantidad,
         precio: nuevoDetalle.precio,
         producto_id: nuevoDetalle.producto_id,
-        compra_id: nuevoDetalle.compra_id
+        compra_id: id
       }
     );
 
