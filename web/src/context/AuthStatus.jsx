@@ -11,7 +11,7 @@ export const AuthStatus = () => {
 
   return (
     <>
-      <p>Vendedor {sesion.usuario} conectado</p>
+      <p> {sesion.id} {sesion.rol} Vendedor {sesion.usuario} conectado</p>
       <button type="submit" className="btn btn-success"
         onClick={() => {
           logout(navigate);

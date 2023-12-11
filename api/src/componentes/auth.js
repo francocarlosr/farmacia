@@ -52,6 +52,7 @@ export const authRouter = express
       // Obtengo cuenta de usuario
       const [rows, fields] = await db.execute(
         `SELECT
+           e.id,
            e.usuario,
            e.password,
            e.rol
@@ -81,6 +82,7 @@ export const authRouter = express
 
       // Sesion en WEB
       const sesion = {
+        id:user.id,
         usuario: user.usuario,
         rol: user.rol,
         token,
