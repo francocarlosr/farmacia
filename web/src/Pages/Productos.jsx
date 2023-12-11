@@ -15,10 +15,7 @@ export const Productos = () => {
   const [codigoError, setCodigoError] = useState("");
   const [precioError, setPrecioError] = useState("");
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
-<<<<<<< HEAD
-=======
   const [disableAgregarButton, setDisableAgregarButton] = useState(true);
->>>>>>> 11a12da6ec66c1e73576e08a801c4f62cad3e2db
 
   const handleNombreProdChange = (e) => {
     const value = e.target.value;
@@ -70,13 +67,9 @@ export const Productos = () => {
   
 
   const checkAllFieldsFilled = () => {
-<<<<<<< HEAD
-    setAllFieldsFilled(nombreProd.trim() !== '' && codigoProd.trim() !== '' && precioProd.trim() !== '');
-=======
     const fieldsFilled = nombreProd.trim() !== "" && codigoProd.trim() !== "" && precioProd.trim() !== "";
     setAllFieldsFilled(fieldsFilled);
     setDisableAgregarButton(!fieldsFilled);
->>>>>>> 11a12da6ec66c1e73576e08a801c4f62cad3e2db
   };
 
   const toggleModal = () => {
@@ -136,10 +129,7 @@ export const Productos = () => {
         setNombreProd("");
         setCodigoProd("");
         setPrecioProd("");
-<<<<<<< HEAD
-=======
         setDisableAgregarButton(true);
->>>>>>> 11a12da6ec66c1e73576e08a801c4f62cad3e2db
       }
     } catch (error) {
       console.error("Error al agregar producto:", error);
