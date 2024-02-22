@@ -16,52 +16,62 @@ export const Productos = () => {
   const [precioError, setPrecioError] = useState("");
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
   const [disableAgregarButton, setDisableAgregarButton] = useState(true);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [disableEliminarButton, setDisableEliminarButton] = useState(true);
+  const [searchResults, setSearchResults] = useState([]);
+  const [modoEdicion, setModoEdicion] = useState(false); // Modo de edición
+
+  useEffect(() => {
+    cargarProductos();
+  }, []);
+
+  
+
+  const cargarProductos = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/producto", {
+        headers: { Authorization: `Bearer ${sesion.token}` },
+      });
+      setProductos(response.data);
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
+  };
 
   const handleNombreProdChange = (e) => {
     const value = e.target.value;
-
-    // Validación de nombre
-    const isValidNombre = /^[a-zA-Z\s]{1,30}$/.test(value);
+    const isValidNombre = /^[a-zA-Z0-9\s]{1,100}$/.test(value);
     setNombreProd(value);
-
     if (!isValidNombre && value.trim() !== "") {
-      setNombreError("Nombre inválido. Solo se permiten letras y espacios, máximo 30 caracteres.");
+      setNombreError("Caracter inválido. Solo se permiten letras, números y espacios, máximo 100 caracteres.");
     } else {
       setNombreError("");
     }
-
     checkAllFieldsFilled();
   };
 
   const handleCodigoProdChange = (e) => {
     const value = e.target.value;
-
-    // Validación de código
     const isValidCodigo = /^\d{5,10}$/.test(value);
     setCodigoProd(value);
-
     if (!isValidCodigo && value.trim() !== "") {
-      setCodigoError("Código inválido. Debe contener entre 5 y 10 dígitos.");
+      setCodigoError("Código inválido. Debe contener entre 5 y 10 numeros.");
     } else {
       setCodigoError("");
     }
-
     checkAllFieldsFilled();
   };
 
   const handlePrecioProdChange = (e) => {
     const value = e.target.value;
-
-    // Validación de precio
     const isValidPrecio = /^(\d+|\d+\.\d*|\d*\.\d+)$/.test(value);
     setPrecioProd(value);
-
     if (!isValidPrecio && value.trim() !== "") {
       setPrecioError("Precio inválido. Ingrese un número entero o un número decimal con punto.");
     } else {
       setPrecioError("");
     }
-
     checkAllFieldsFilled();
   };
 
@@ -75,47 +85,30 @@ export const Productos = () => {
     setShowModal(!showModal);
   };
 
-  useEffect(() => {
-    cargarProductos();
-  }, []);
-
-  const cargarProductos = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/producto", {
-        headers: { Authorization: `Bearer ${sesion.token}` },
-      });
-      setProductos(response.data);
-    } catch (error) {
-      console.error("Error al cargar productos:", error);
-    }
-  };
-
   const agregarProducto = async () => {
     try {
-      // Verificar si alguno de los campos obligatorios está vacío
       if (!allFieldsFilled) {
         alert("Por favor complete todos los campos obligatorios");
         return;
       }
-  
+
       if (nombreError || codigoError || precioError) {
-        // No permite agregar si hay errores de validación
         alert("Corrija los errores de validación antes de agregar el producto");
         return;
       }
-  
+
       const existingProductByName = productos.find((producto) => producto.nombre === nombreProd);
       const existingProductByCode = productos.find((producto) => producto.codigo === codigoProd);
-  
+
       if (existingProductByName || existingProductByCode) {
         const errorMessage = existingProductByName
           ? "Ya existe un producto con el mismo nombre."
           : "Ya existe un producto con el mismo código.";
         setModalMessage(errorMessage);
         toggleModal();
-        return; // Salir de la función si el producto ya existe
+        return;
       }
-  
+
       const response = await axios.post(
         "http://localhost:3000/producto",
         {
@@ -129,46 +122,99 @@ export const Productos = () => {
           headers: { Authorization: `Bearer ${sesion.token}` },
         }
       );
-  
-      // Actualizar el estado con la respuesta del servidor
+
       setProductos((prevProductos) => [...prevProductos, response.data]);
       setNombreProd("");
       setCodigoProd("");
       setPrecioProd("");
       setDisableAgregarButton(true);
+
+      cargarProductos();
     } catch (error) {
       console.error("Error al agregar producto:", error);
     }
   };
 
-  const buscarProducto = async () => {
+  const buscarProducto = (searchTerm) => {
+    if (!searchTerm.trim()) {
+      setSearchResults(productos);
+    } else {
+      const filteredResults = productos.filter((producto) =>
+        producto.nombre.toLowerCase().startsWith(searchTerm.toLowerCase())
+      );
+      setSearchResults(filteredResults);
+    }
+  };
+
+  const eliminarProducto = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/producto/${ingreseProduct}`,
+      if (selectedProductId) {
+        await axios.delete(`http://localhost:3000/producto/${selectedProductId}`, {
+          headers: { Authorization: `Bearer ${sesion.token}` },
+        });
+        const updatedProductos = productos.filter((producto) => producto.id !== selectedProductId);
+        setProductos(updatedProductos);
+        setSelectedProductId(null);
+        setDisableEliminarButton(true);
+        // Limpiar el formulario y establecer el modo de edición en falso
+        setNombreProd("");
+        setCodigoProd("");
+        setPrecioProd("");
+        setDisableAgregarButton(true); // Asegúrate de deshabilitar el botón Agregar
+        setModoEdicion(false); // Desactivar modo de edición
+        cargarProductos();
+      }
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+    }
+  };
+  
+
+  const modificarProducto = async (id) => {
+    try {
+      setSelectedProductId(id);
+      const response = await axios.get(`http://localhost:3000/producto/${id}`);
+      const { nombre, codigo, precio } = response.data;
+      setNombreProd(nombre);
+      setCodigoProd(codigo);
+      setPrecioProd(precio);
+      setDisableEliminarButton(false);
+      setModoEdicion(true); // Establecer modo de edición
+    } catch (error) {
+      console.error("Error al cargar producto para modificar:", error);
+    }
+  };
+
+  const guardarCambiosProducto = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3000/producto/${selectedProductId}`,
+        {
+          producto: {
+            nombre: nombreProd,
+            codigo: codigoProd,
+            precio: precioProd,
+          },
+        },
         {
           headers: { Authorization: `Bearer ${sesion.token}` },
         }
       );
-      if (!ingreseProduct.trim()) {
-        cargarProductos();
-      } else {
-        setProductos([response.data]);
-      }
+      cargarProductos();
+      setNombreProd("");
+      setCodigoProd("");
+      setPrecioProd("");
+      setDisableAgregarButton(true);
+      setModoEdicion(false); // Desactivar modo de edición
     } catch (error) {
-      console.error("Error al buscar producto:", error);
+      console.error("Error al modificar producto:", error);
     }
   };
 
-  const eliminarProducto = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3000/producto/${id}`, {
-        headers: { Authorization: `Bearer ${sesion.token}` },
-      });
-      const updatedProductos = productos.filter((producto) => producto.id !== id);
-      setProductos(updatedProductos);
-    } catch (error) {
-      console.error("Error al eliminar producto:", error);
-    }
+  const handleSearchChange = (e) => {
+    const searchTerm = e.target.value;
+    setIngreseProduct(searchTerm);
+    buscarProducto(searchTerm);
   };
 
   return (
@@ -177,11 +223,6 @@ export const Productos = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-6">
-            <button className="btn btn-primary" onClick={cargarProductos}>
-              Refrescar Tabla
-            </button>
-            <br />
-            <br />
             <label htmlFor="nombreProd">Nombre:</label>
             <input
               type="text"
@@ -221,13 +262,22 @@ export const Productos = () => {
                 {precioError}
               </div>
             )}
-            <button
-              className="btn btn-primary"
-              onClick={agregarProducto}
-              disabled={disableAgregarButton}
-            >
-              Agregar
-            </button>
+            {modoEdicion ? (
+              <button
+                className="btn btn-success"
+                onClick={guardarCambiosProducto}
+              >
+                Guardar cambios
+              </button>
+            ) : (
+              <button
+                className="btn btn-primary"
+                onClick={agregarProducto}
+                disabled={disableAgregarButton}
+              >
+                Agregar
+              </button>
+            )}
             <br />
             <br />
             <label htmlFor="ingreseProduct">Buscar:</label>
@@ -235,12 +285,9 @@ export const Productos = () => {
               type="text"
               id="ingreseProduct"
               value={ingreseProduct}
-              onChange={(e) => setIngreseProduct(e.target.value)}
+              onChange={handleSearchChange}
               className="form-control"
             />
-            <button className="btn btn-primary" onClick={buscarProducto}>
-              Buscar
-            </button>
           </div>
           <div className="col-md-6">
             <table className="table table-hover">
@@ -248,36 +295,35 @@ export const Productos = () => {
                 <tr>
                   <th>Id</th>
                   <th>Nombre</th>
-                  <th>Codigo</th>
+                  <th>Código</th>
                   <th>Precio</th>
                   <th>Stock</th>
-                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {productos.map((producto) => (
-                  <tr key={producto.id}>
+                {searchResults.map((producto) => (
+                  <tr key={producto.id} onClick={() => modificarProducto(producto.id)}>
                     <td>{producto.id}</td>
                     <td>{producto.nombre}</td>
                     <td>{producto.codigo}</td>
                     <td>{producto.precio}</td>
                     <td>{producto.stock}</td>
-                    <td>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => eliminarProducto(producto.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            <div>
+              <button
+                className="btn btn-danger"
+                onClick={eliminarProducto}
+                disabled={disableEliminarButton}
+              >
+                Eliminar
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
       {showModal && (
         <div className="modal" tabIndex="-1" role="dialog" style={{ display: "block", color: "white" }}>
           <div className="modal-dialog" role="document">

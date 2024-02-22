@@ -35,36 +35,50 @@ export const Compras = () => {
       const response = await axios.get("http://localhost:3000/producto", {
         headers: { Authorization: `Bearer ${sesion.token}` },
       });
+      console.log("Productos recibidos:", response.data);  // Agrega este console.log
       setProductos(response.data);
     } catch (error) {
       console.error("Error al cargar productos:", error);
     }
   };
 
-
   const agregarDetalle = () => {
-    const producto = productos.find(
-      (p) => p.id === parseInt(productoSeleccionado)
-    );
+    const producto = productos.find((p) => p.id === parseInt(productoSeleccionado));
     const detalle = {
       producto_id: productoSeleccionado,
       nombreProducto: producto.nombre,
       cantidad: cantidadCompra,
       precio: precioCompra,
-      fecha: fechaComp, // Agregar fecha
-      proveedor: proveedorComp // Agregar proveedor
     };
     setDetallesCompra([...detallesCompra, detalle]);
     // Limpiar los campos después de agregar el detalle
-    limpiarCampos();
-  };
-
-  const limpiarCampos = () => {
     setCantidadCompra("");
     setPrecioCompra("");
-    setFechaComp("");
-    setProveedorComp("");
     setProductoSeleccionado("");
+  };
+
+  const agregarCompra = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/compras",
+        {
+          nuevaCompra: {
+            fecha: fechaComp,
+            proveedor: proveedorComp,
+          },
+          nuevoDetalle: detallesCompra,
+        },
+        {
+          headers: { Authorization: `Bearer ${sesion.token}` },
+        }
+      );
+      setCompras([...compras, response.data]);
+      setFechaComp("");
+      setProveedorComp("");
+      setDetallesCompra([]);
+    } catch (error) {
+      console.error("Error al agregar compra:", error);
+    }
   };
 
   const eliminarCompra = async (id) => {
@@ -81,20 +95,18 @@ export const Compras = () => {
 
   const buscarCompra = async () => {
     try {
-      let response;
-      if (!ingreseCompra.trim()) {
-        response = await axios.get("http://localhost:3000/compras", {
+      const response = await axios.get(
+        `http://localhost:3000/compras/${ingreseCompra}`,
+        {
           headers: { Authorization: `Bearer ${sesion.token}` },
-        });
+        }
+      );
+      // Si ingreseCompra está vacío, cargar todas las compras nuevamente
+      if (!ingreseCompra.trim()) {
+        cargarCompras();
       } else {
-        response = await axios.get(
-          `http://localhost:3000/compras/${ingreseCompra}`,
-          {
-            headers: { Authorization: `Bearer ${sesion.token}` },
-          }
-        );
+        setCompras([response.data]);
       }
-      setCompras(response.data);
     } catch (error) {
       console.error("Error al buscar compra:", error);
     }
@@ -126,17 +138,23 @@ export const Compras = () => {
             />
             <label htmlFor="productoSeleccionado">Producto:</label>
             <select
-              id="seleccionarProducto"
-              className="form-select"
-              onChange={(e) => setProductoSeleccionado(e.target.value)}
-            >
-              <option value="">Seleccionar Producto</option>
-              {productos.map((producto) => (
-                <option key={producto.id} value={producto.id}>
-                  {producto.nombre}
-                </option>
-              ))}
-            </select>
+                  id="seleccionarProducto"
+                  className="form-select"
+                  onChange={(e) =>
+                    agregarDetalleVenta(
+                      productos.find(
+                        (producto) => producto.id === parseInt(e.target.value)
+                      )
+                    )
+                  }
+                >
+                  <option value="">Seleccionar Producto</option>
+                  {productos.map((producto) => (
+                    <option key={producto.id} value={producto.id}>
+                      {producto.nombre} 
+                    </option>
+                  ))}
+                </select>
             <label htmlFor="cantidadCompra">Cantidad:</label>
             <input
               type="number"
@@ -158,6 +176,8 @@ export const Compras = () => {
               Detalle de Compra
             </button>
             <br />
+            <br />
+            <br />
             <label htmlFor="ingreseCompra">Buscar por ID:</label>
             <input
               type="text"
@@ -169,9 +189,6 @@ export const Compras = () => {
             <button className="btn btn-primary" onClick={buscarCompra}>
               Buscar
             </button>
-            <button className="btn btn-primary" onClick={eliminarCompra}>
-              eliminar
-            </button>
           </div>
           <div className="col-md-6">
             <h3>Detalles de Compra</h3>
@@ -181,8 +198,9 @@ export const Compras = () => {
                   <th>Producto</th>
                   <th>Cantidad</th>
                   <th>Precio</th>
-                  <th>Fecha</th>
-                  <th>Proveedor</th>
+                  <th>fecha</th>
+                  <th>proveedor</th>
+                  <th>stock</th>
                 </tr>
               </thead>
               <tbody>
@@ -191,8 +209,34 @@ export const Compras = () => {
                     <td>{detalle.nombreProducto}</td>
                     <td>{detalle.cantidad}</td>
                     <td>{detalle.precio}</td>
-                    <td>{detalle.fecha}</td>
-                    <td>{detalle.proveedor}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <h3>Compras</h3>
+            <table className="table table-hover">
+              <thead className="table-success">
+                <tr>
+                  <th>Id</th>
+                  <th>Fecha</th>
+                  <th>Proveedor</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {compras.map((compra) => (
+                  <tr key={compra.id}>
+                    <td>{compra.id}</td>
+                    <td>{compra.fecha}</td>
+                    <td>{compra.proveedor}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => eliminarCompra(compra.id)}
+                      >
+                        Eliminar
+                      </button>                      
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -1,0 +1,87 @@
+CREATE TABLE `cliente` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `direccion` VARCHAR(100) NOT NULL,
+  `telefono` VARCHAR(15) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `empleado` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `usuario` VARCHAR(45) NOT NULL,
+  `rol` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(150) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `usuario_UNIQUE` (`usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `producto` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `codigo` INT NOT NULL,
+  `precio` FLOAT NOT NULL,
+  `stock` INT DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `codigo_UNIQUE` (`codigo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `venta` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha` DATETIME NOT NULL,
+  `empleado_id` INT NOT NULL,
+  `producto_id` INT NOT NULL,
+  `cliente_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_Venta_Empleado_idx` (`empleado_id`),
+  KEY `fk_Venta_Producto_idx` (`producto_id`),
+  KEY `fk_Venta_Cliente_idx` (`cliente_id`),
+  CONSTRAINT `fk_Venta_Empleado` FOREIGN KEY (`empleado_id`) REFERENCES `empleado` (`id`),
+  CONSTRAINT `fk_Venta_Producto` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`),
+  CONSTRAINT `fk_Venta_Cliente` FOREIGN KEY (`cliente_id`) REFERENCES `cliente` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `detalleventa` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT NOT NULL,
+  `precio` FLOAT NOT NULL,
+  `venta_id` INT NOT NULL,
+  `producto_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_DetalleVenta_Venta_idx` (`venta_id`),
+  KEY `fk_DetalleVenta_Producto_idx` (`producto_id`),
+  CONSTRAINT `fk_DetalleVenta_Venta` FOREIGN KEY (`venta_id`) REFERENCES `venta` (`id`),
+  CONSTRAINT `fk_DetalleVenta_Producto` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `compra` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha` TIMESTAMP NOT NULL,
+  `proveedor` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `detallecompra` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT NOT NULL,
+  `precio` FLOAT NOT NULL,
+  `producto_id` INT NOT NULL,
+  `compra_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_DetalleCompra_Producto1_idx` (`producto_id`),
+  KEY `fk_DetalleCompra_Compra1_idx` (`compra_id`),
+  CONSTRAINT `fk_DetalleCompra_Producto1` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`),
+  CONSTRAINT `fk_DetalleCompra_Compra1` FOREIGN KEY (`compra_id`) REFERENCES `compra` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+ALTER TABLE `venta`
+ADD COLUMN `cliente_id` INT NOT NULL AFTER `producto_id`;
+
+ALTER TABLE `producto`
+ADD COLUMN `stock` INT DEFAULT 0 AFTER `precio`;
+
+CREATE TRIGGER after_venta_insert
+AFTER INSERT ON `detalleventa`
+FOR EACH ROW
+UPDATE `producto`
+SET `stock` = `stock` - NEW.cantidad
+WHERE `id` = NEW.producto_id;

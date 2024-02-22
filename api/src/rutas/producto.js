@@ -3,7 +3,7 @@ import { db } from "../../db.js";
 
 export const productoRouter = express.Router()
 
-// GET - LISTAR TODOS LOS PRODUCTOS ---
+// GET -LISTAR TODOS LOS PRODUCTOS EN RUTA RAIZ
 .get("/", async (req, res) => {
    try {
       const [rows, fields] = await db.execute("SELECT * FROM producto");
@@ -11,6 +11,49 @@ export const productoRouter = express.Router()
    } catch (error) {
       console.error("Error al consultar la base de datos:", error);
       res.status(500).send("Error al consultar la base de datos");
+   }
+})
+
+// GET -BUSCAR PRODUCTO POR NOMBRE O POR ID
+.get("/:parametro", async (req, res) => {
+   const parametro = req.params.parametro;
+
+   // Verificar si el parámetro es un número (posiblemente un ID)
+   if (!isNaN(parametro)) {
+      const [rows, fields] = await db.execute("SELECT * FROM producto WHERE id=:id", {
+         id: parametro
+      });
+
+      if (rows.length > 0) {
+         res.send(rows[0]);
+      } else {
+         res.status(404).send({ mensaje: "Producto no encontrado" });
+      }
+   } else {
+      // Si el parámetro no es un número, asumir que es un nombre
+      const [rows, fields] = await db.execute("SELECT * FROM producto WHERE nombre=:nombre", {
+         nombre: parametro
+      });
+
+      if (rows.length > 0) {
+         res.send(rows[0]);
+      } else {
+         res.status(404).send({ mensaje: "Producto no encontrado" });
+      }
+   }
+})
+
+// GET - BUSCAR PRODUCTOS POR ID
+/*
+.get("/:id", async (req, res) => {
+   const id = req.params.id
+   const [rows, fields] = await db.execute("SELECT * FROM producto WHERE id=:id", {
+      id
+   })
+   if (rows.length > 0) {
+      res.send(rows[0])
+   } else {
+      res.status(404).send({ mensaje: "Producto no encontrado" })
    }
 })
 
@@ -26,8 +69,10 @@ export const productoRouter = express.Router()
       res.status(404).send({ mensaje: "Producto no encontrado" })
    }
 })
+*/
 
-// INGRESAR PRODUCTOS ---
+
+// POST - INGRESAR PRODUCTOS A LA BD ---
 .post("/", async (req, res) => {
    try {
       const producto = req.body.producto;
@@ -80,12 +125,12 @@ export const productoRouter = express.Router()
       { id: idreq, nombre: producto.nombre, precio: producto.precio, codigo: producto.codigo }
    );
 
-   res.send("ok");
+   res.send("El producto fue modificado");
 })
 
 // ELIMINAR PRODUCTO POR ID ---
 .delete("/:id", async (req, res) => {
    const id = req.params.id;
    await db.execute("DELETE FROM producto WHERE id=:id", { id });
-   res.send("ok");
+   res.send("El producto fue eliminado");
 });

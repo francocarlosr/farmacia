@@ -67,15 +67,6 @@ export const Empleados = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (password === confirmPassword) {
-      // Las contraseñas coinciden, puedes proceder a agregar el registro
-      console.log('Contraseña válida, agregar registro');
-    } else {
-      // Las contraseñas no coinciden, puedes mostrar un mensaje de error o realizar alguna acción
-      console.log('Las contraseñas no coinciden');
-    }
-  };
 
   const agregarEmpleado = async () => {
     try {
