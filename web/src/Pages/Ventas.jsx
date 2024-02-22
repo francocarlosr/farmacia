@@ -5,13 +5,13 @@ import axios from "axios";
 export const Ventas = () => {
   const { sesion } = useAuthContext();
   const [ventas, setVentas] = useState([]);
-  const [fechaVenta, setFechaVenta] = useState("");
-  const [clienteVenta, setClienteVenta] = useState("");
-  const [empleado_id, setEmpleado_id] = useState("");
   const [productos, setProductos] = useState([]);
   const [detallesVenta, setDetallesVenta] = useState([]);
   const [ingreseVenta, setIngreseVenta] = useState("");
   const [totalVenta, setTotalVenta] = useState(0);
+  const [fechaVenta, setFechaVenta] = useState("");
+  const [clienteVenta, setClienteVenta] = useState("");
+  const [ventasRegistradas, setVentasRegistradas] = useState([]);
 
   useEffect(() => {
     cargarVentas();
@@ -53,7 +53,7 @@ export const Ventas = () => {
         proveedor: producto.proveedor,
         precioTotal: parseInt(cantidad) * producto.precio,
       };
-      setDetallesVenta((prevDetalles) => [...prevDetalles, detalle]);
+      setDetallesVenta([...detallesVenta, detalle]);
     }
   };
 
@@ -67,26 +67,38 @@ export const Ventas = () => {
 
   const agregarVenta = async () => {
     try {
+      const nuevaVenta = {
+        fecha: fechaVenta,
+        cliente: clienteVenta,
+        detallesVenta: detallesVenta,
+      };
+
       const response = await axios.post(
         "http://localhost:3000/ventas",
-        {
-          nuevaVenta: {
-            fecha: fechaVenta,
-            cliente: clienteVenta,
-            empleado_id: empleado_id,
-          },
-          detallesVenta: detallesVenta,
-        },
-        {
-          headers: { Authorization: `Bearer ${sesion.token}` },
-        }
+        { nuevaVenta },
+        { headers: { Authorization: `Bearer ${sesion.token}` } }
       );
-      setVentas((prevVentas) => [...prevVentas, response.data]);
+
+      setVentas([...ventas, response.data]);
+
+      // Limpiar campos de fecha, cliente y detalles de venta
       setFechaVenta("");
       setClienteVenta("");
-      setEmpleado_id("");
       setDetallesVenta([]);
-      // No es necesario cargarVentas aquí, ya se actualiza con setVentas
+      setTotalVenta(0);
+
+      // Agregar un objeto para cada detalle de venta a las ventas registradas
+      setVentasRegistradas([...ventasRegistradas, ...detallesVenta.map((detalle, index) => ({
+        id: detalle.id || index + 1,
+        venta_id: response.data.id,
+        fecha: response.data.fecha,
+        cliente: response.data.cliente,
+        producto: detalle.nombre,
+        cantidad: detalle.cantidad,
+        precioUnitario: detalle.precio,
+        precioTotal: detalle.precioTotal,
+      }))]);
+
     } catch (error) {
       console.error("Error al agregar venta:", error.response);
     }
@@ -97,8 +109,7 @@ export const Ventas = () => {
       await axios.delete(`http://localhost:3000/ventas/${id}`, {
         headers: { Authorization: `Bearer ${sesion.token}` },
       });
-      const updatedVentas = ventas.filter((venta) => venta.id !== id);
-      setVentas(updatedVentas);
+      setVentas(ventas.filter((venta) => venta.id !== id));
     } catch (error) {
       console.error("Error al eliminar venta:", error);
     }
@@ -108,16 +119,9 @@ export const Ventas = () => {
     try {
       const response = await axios.get(
         `http://localhost:3000/ventas/${ingreseVenta}`,
-        {
-          headers: { Authorization: `Bearer ${sesion.token}` },
-        }
+        { headers: { Authorization: `Bearer ${sesion.token}` } }
       );
-      // Si ingreseVenta está vacío, cargar todas las ventas nuevamente
-      if (!ingreseVenta.trim()) {
-        cargarVentas();
-      } else {
-        setVentas([response.data]);
-      }
+      setVentas(!ingreseVenta.trim() ? response.data : [response.data]);
     } catch (error) {
       console.error("Error al buscar venta:", error);
     }
@@ -127,6 +131,30 @@ export const Ventas = () => {
     <>
       <h2>Ventas</h2>
       <div className="container">
+        <div className="row">
+          <div className="col-md-6">
+            <label htmlFor="fechaVenta">Fecha:</label>
+            <input
+              type="date"
+              id="fechaVenta"
+              value={fechaVenta}
+              onChange={(e) => setFechaVenta(e.target.value)}
+              className="form-control"
+            />
+          </div>
+          <div className="col-md-6">
+            <label htmlFor="clienteVenta">Cliente:</label>
+            <input
+              type="text"
+              id="clienteVenta"
+              value={clienteVenta}
+              onChange={(e) => setClienteVenta(e.target.value)}
+              className="form-control"
+            />
+          </div>
+        </div>
+        <br />
+        <br />
         <div className="row">
           <div className="col-md-6">
             <label htmlFor="ingreseVenta">Buscar por ID:</label>
@@ -140,37 +168,6 @@ export const Ventas = () => {
             <button className="btn btn-primary" onClick={buscarVenta}>
               Buscar
             </button>
-            <br />
-            <br />
-            <button className="btn btn-primary" onClick={cargarVentas}>
-              Refrescar Tabla
-            </button>
-            <br />
-            <br />
-            <label htmlFor="fechaVenta">Fecha:</label>
-            <input
-              type="date"
-              id="fechaVenta"
-              value={fechaVenta}
-              onChange={(e) => setFechaVenta(e.target.value)}
-              className="form-control"
-            />
-            <label htmlFor="clienteVenta">Cliente:</label>
-            <input
-              type="text"
-              id="clienteVenta"
-              value={clienteVenta}
-              onChange={(e) => setClienteVenta(e.target.value)}
-              className="form-control"
-            />
-            <label htmlFor="empleado_id">ID empleado:</label>
-            <input
-              type="text"
-              id="empleado_id"
-              value={empleado_id}
-              onChange={(e) => setEmpleado_id(e.target.value)}
-              className="form-control"
-            />
             <br />
             <br />
             <div className="row">
@@ -198,41 +195,8 @@ export const Ventas = () => {
             </div>
             <br />
             <br />
-            <button className="btn btn-success" onClick={agregarVenta}>
-              Vender
-            </button>
           </div>
-          <div className="col-md-6">
-            <table className="table table-hover">
-              <thead className="table-success">
-                <tr>
-                  <th>Id</th>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Empleado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ventas.map((venta) => (
-                  <tr key={venta.id}>
-                    <td>{venta.id}</td>
-                    <td>{venta.fecha}</td>
-                    <td>{venta.cliente}</td>
-                    <td>{venta.empleado_id}</td>
-                    <td>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => eliminarVenta(venta.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <div className="col-md-6"></div>
         </div>
         <div className="row">
           <div className="col-md-12">
@@ -262,6 +226,43 @@ export const Ventas = () => {
         <div className="row">
           <div className="col-md-12">
             <h3>Total Venta: {totalVenta}</h3>
+          </div>
+        </div>
+        <button className="btn btn-success" onClick={agregarVenta}>
+          Vender
+        </button>
+        <br />
+        <div className="row">
+          <div className="col-md-12">
+            <h3>Ventas Registradas</h3>
+            <table className="table table-hover">
+              <thead className="table-success">
+                <tr>
+                  <th>ID</th>
+                  <th>ID Venta</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Precio Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ventasRegistradas.map((venta, index) => (
+                  <tr key={index}>
+                    <td>{venta.id}</td>
+                    <td>{venta.venta_id}</td>
+                    <td>{venta.fecha}</td>
+                    <td>{venta.cliente}</td>
+                    <td>{venta.producto}</td>
+                    <td>{venta.cantidad}</td>
+                    <td>{venta.precioUnitario}</td>
+                    <td>{venta.precioTotal}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

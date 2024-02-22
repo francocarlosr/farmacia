@@ -10,4 +10,4 @@ export const db = await mysql.createConnection({
   namedPlaceholders: true,
 });
 
-console.log("Conectado a base de datos");
+console.log("Conectado a la base de datos");

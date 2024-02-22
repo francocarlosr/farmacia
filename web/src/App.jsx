@@ -2,8 +2,9 @@ import { Route, Routes } from "react-router-dom";
 import { Layout } from "./Pages/Layout";
 import { LoginPage } from "./Pages/LoginPage";
 import { Productos } from "./Pages/Productos";
-import { Compras } from "./Pages/Compras";
+import { Clientes } from "./Pages/Clientes";
 import { Ventas } from "./Pages/Ventas";
+import { Compras } from "./Pages/Compras";
 import { Empleados } from "./Pages/Empleados";
 import { RequiredAuth } from "./context/RequireAuth";
 
@@ -11,7 +12,7 @@ function App() {
   return (
     <>
       <h1>
-        <center>Farmacias P@ssw0rd</center>
+        <center>HZero P@ssw0rd</center>
       </h1>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -28,12 +29,20 @@ function App() {
                 <Productos/>
               </RequiredAuth>
             }
-          />
+          />          
           <Route
             path="/compras"
             element={
               <RequiredAuth>
                 <Compras/>
+              </RequiredAuth>
+            }
+          />
+          <Route
+            path="/Clientes"
+            element={
+              <RequiredAuth>
+                <Clientes/>
               </RequiredAuth>
             }
           />

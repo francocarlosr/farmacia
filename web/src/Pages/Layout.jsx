@@ -19,6 +19,11 @@ export const Layout = () => {
               </Link>
             </li>
             <li className="nav-item">
+              <Link to="/clientes" className="nav-link">
+                Clientes
+              </Link>
+            </li>
+            <li className="nav-item">
               <Link to="/ventas" className="nav-link">
                 Ventas
               </Link>

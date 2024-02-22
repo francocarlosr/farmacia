@@ -50,8 +50,10 @@ export const comprasRouter = express.Router()
     try {
       const { id } = req.params;
       const [rows, fields] = await db.execute(
-        "SELECT dc.id, p.nombre AS producto, dc.cantidad, dc.precio FROM detallecompra dc \
+        "SELECT dc.id, p.nombre AS producto, dc.cantidad, dc.precio, c.fecha,\
+         c.proveedor FROM detallecompra dc \
         JOIN producto p ON dc.producto_id = p.id \
+        JOIN compra c ON dc.compra_id = c.id \
         WHERE dc.compra_id = :id",
         { id }
       );
@@ -88,7 +90,7 @@ export const comprasRouter = express.Router()
   .post("/detallecompra", async (req, res) => {
     try {
       const nuevoDetalle = req.body.nuevoDetalle;
-      const [rows] = await db.execute(
+      const [rows, fields] = await db.execute(
         "INSERT INTO detallecompra (cantidad, precio, producto_id, compra_id) VALUES (:cantidad, :precio, :producto_id, :compra_id)",
         {
           cantidad: nuevoDetalle.cantidad,
@@ -106,7 +108,7 @@ export const comprasRouter = express.Router()
         }
       );
 
-      res.status(201).send({ mensaje: "Detalle de compra creado correctamente" });
+      res.status(201).send({ rows });
     } catch (error) {
       console.error("Error al agregar nuevo detalle de compra:", error);
       res.status(500).send({ mensaje: "Error interno del servidor" });

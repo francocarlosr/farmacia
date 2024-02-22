@@ -1,0 +1,70 @@
+/*Estilos para el contenedor principal
+.container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  
+  Estilos para el formulario de entrada de datos 
+  .form-control {
+    margin-bottom: 10px;
+  }
+  
+  Estilos para el botón "Agregar"
+  .btn-primary {
+    margin-top: 10px;
+  }
+  
+   Estilos para la tabla de productos
+  .table {
+    margin-top: 20px;
+  }
+  
+   Estilos para las celdas de la tabla 
+  th, td {
+    text-align: center;
+  }
+  
+   Estilos para el botón de eliminar 
+  .btn-danger {
+    margin-top: 10px;
+  }
+  
+  Estilos para el modal 
+  .modal {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+  }
+  
+  .modal-title {
+    font-weight: bold;
+  }
+  
+  .modal-body {
+    padding: 10px 0;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
+  }
+  
+  .modal-footer .btn-primary {
+    margin-left: 10px;
+  }
+  */

@@ -1,30 +1,28 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useAuthContext } from "../context/AuthContext";
+import axios from "axios";
 
 export const Empleados = () => {
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { sesion } = useAuthContext();
   const [empleados, setEmpleados] = useState([]);
-  const [usuario, setUsuario] = useState('');
-  const [password, setPassword] = useState('');
-  const [rol, setRol] = useState('');
-  const [idSeleccionado, setIdSeleccionado] = useState(null);
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false); 
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [usuario, setUsuario] = useState("");
+  const [password, setPassword] = useState("");
+  const [rol, setRol] = useState("");
+  const [idSeleccionado, setIdSeleccionado] = useState(false);
+  const [usuarioError, setUsuarioError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     cargarEmpleados();
   }, []);
 
-  useEffect(() => {
-    setIsButtonEnabled(!!usuario.trim() && !!password.trim() && !!rol.trim());
-  }, [usuario, password, rol]);
-
   const cargarEmpleados = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/empleados');
+      const response = await axios.get("http://localhost:3000/empleados");
       setEmpleados(response.data);
     } catch (error) {
-      console.error('Error al cargar empleados:', error);
+      console.error("Error al cargar empleados:", error);
     }
   };
 
@@ -33,141 +31,191 @@ export const Empleados = () => {
       const response = await axios.get(`http://localhost:3000/empleados/${id}`);
       const empleado = response.data;
       setUsuario(empleado.usuario);
-      setPassword(empleado.password);
+      setPassword(empleado.password); // Asegúrate de manejar la contraseña de manera segura
       setRol(empleado.rol);
       setIdSeleccionado(id);
     } catch (error) {
-      console.error('Error al cargar datos del empleado:', error);
+      console.error("Error al cargar datos del empleado:", error);
     }
   };
 
+  const handleUsuarioChange = (e) => {
+    const value = e.target.value;
+
+    // Validación de usuario
+    const isValidUsuario = /^[a-zA-Z0-9]+$/.test(value);
+    setUsuario(value);
+
+    if (!isValidUsuario && value.trim() !== "") {
+      setUsuarioError("Usuario inválido. Solo se permiten letras y números.");
+    } else {
+      setUsuarioError("");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+
+    // Validación de contraseña
+    const isValidPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,15}$/.test(value);
+    setPassword(value);
+
+    if (!isValidPassword && value.trim() !== "") {
+      setPasswordError("Contraseña inválida. Debe tener entre 8 y 15 caracteres, al menos una letra mayúscula y un número.");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+
   const agregarEmpleado = async () => {
     try {
-      const existingUser = empleados.find((empleado) => empleado.usuario === usuario);
-      if (existingUser) {
-        setModalMessage('El usuario ya existe');
-        setShowModal(true);
+      // Verificar si el usuario ya existe
+      const usuarioExistente = empleados.find((empleado) => empleado.usuario === usuario);
+      if (usuarioExistente) {
+        // Mostrar mensaje en ventana modal o alert
+        alert("Este usuario ya existe");
         return;
       }
 
-      const response = await axios.post(
-        'http://localhost:3000/empleados',
-        {
-          usuario,
-          password,
-          rol,
-        }
-      );
+      // El usuario no existe, proceder a agregarlo
+      const response = await axios.post("http://localhost:3000/empleados", {
+        usuario,
+        password, // hay que poner el coso para manejar la contraseña de manera segura
+        rol,
+      });
       setEmpleados([...empleados, response.data]);
       limpiarFormulario();
     } catch (error) {
-      console.error('Error al agregar empleado:', error);
+      console.error("Error al agregar empleado:", error);
     }
   };
 
   const editarEmpleado = async () => {
     try {
-      await axios.put(
-        `http://localhost:3000/empleados/${idSeleccionado}`,
-        {
-          usuario,
-          password,
-          rol,
-        }
-      );
+      await axios.put(`http://localhost:3000/empleados/${idSeleccionado}`, {
+        usuario,
+        password, // hacer para qie la contraseña se vea con puntitos
+        rol,
+      });
       const nuevosEmpleados = empleados.map((empleado) =>
-        empleado.id === idSeleccionado ? { ...empleado, usuario, rol } : empleado
+        empleado.id === idSeleccionado
+          ? { ...empleado, usuario, rol }
+          : empleado
       );
       setEmpleados(nuevosEmpleados);
       limpiarFormulario();
     } catch (error) {
-      console.error('Error al editar empleado:', error);
+      console.error("Error al editar empleado:", error);
     }
   };
 
   const eliminarEmpleado = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/empleados/${id}`);
-      const nuevosEmpleados = empleados.filter((empleado) => empleado.id !== id);
+      const nuevosEmpleados = empleados.filter(
+        (empleado) => empleado.id !== id
+      );
       setEmpleados(nuevosEmpleados);
       limpiarFormulario();
     } catch (error) {
-      console.error('Error al eliminar empleado:', error);
+      console.error("Error al eliminar empleado:", error);
     }
   };
 
   const limpiarFormulario = () => {
     setIdSeleccionado(null);
-    setUsuario('');
-    setPassword('');
-    setRol('');
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
+    setUsuario("");
+    setPassword("");
+    setRol("");
   };
 
   return (
     <>
       <div className="container mt-4">
-        <h2 className="mb-4">Empleados</h2>
+        <h1 className="container mt-4 mb-4 text-center">Empleados</h1>
         <div className="row">
           <div className="col-md-6">
             <form>
               <div className="mb-3">
-                <label htmlFor="usuario" className="form-label">
-                  Usuario:
-                </label>
                 <input
                   type="text"
-                  id="usuario"
-                  className="form-control"
+                  placeholder="Usuario"
+                  className={`form-control ${usuarioError ? 'is-invalid' : ''}`}
                   value={usuario}
-                  onChange={(e) => setUsuario(e.target.value)}
+                  onChange={handleUsuarioChange}
                 />
+                {usuarioError && (
+                  <div className="invalid-feedback">
+                    {usuarioError}
+                  </div>
+                )}
               </div>
 
               <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Contraseña:
-                </label>
                 <input
-                  type="text"
-                  id="password"
-                  className="form-control"
+                  type="password"
+                  placeholder="Contraseña"
+                  className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
+                />
+                {passwordError && (
+                  <div className="invalid-feedback">
+                    {passwordError}
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-3">
+                <input
+                  type="password"
+                  placeholder="Confirmar Contraseña"
+                  className="form-control"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
 
               <div className="mb-3">
-                <label htmlFor="rol" className="form-label">
-                  Rol:
-                </label>
-                <input
-                  type="text"
-                  id="rol"
+                <select
                   className="form-control"
                   value={rol}
                   onChange={(e) => setRol(e.target.value)}
-                />
+                >
+                  <option>Selecciona un Rol</option>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
 
               <div className="d-grid gap-2">
                 {idSeleccionado ? (
                   <>
-                    <button className="btn btn-primary" onClick={editarEmpleado} disabled={!isButtonEnabled}>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={editarEmpleado}
+                    >
                       Aceptar
                     </button>
                     <button
+                      type="button"
                       className="btn btn-secondary"
-                      onClick={() => cargarDatosEmpleado(null)}
+                      onClick={() => {
+                        limpiarFormulario();
+                        cargarDatosEmpleado(null);
+                      }}
                     >
                       Cancelar
                     </button>
                   </>
                 ) : (
-                  <button className="btn btn-primary" onClick={agregarEmpleado} disabled={!isButtonEnabled}>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={agregarEmpleado}
+                  >
                     Agregar
                   </button>
                 )}
@@ -179,7 +227,7 @@ export const Empleados = () => {
             <table className="table table-hover">
               <thead className="table-success">
                 <tr>
-                  <th>Id</th>
+                  <th>ID</th>
                   <th>Usuario</th>
                   <th>Rol</th>
                   <th>Acciones</th>
@@ -212,27 +260,6 @@ export const Empleados = () => {
           </div>
         </div>
       </div>
-
-      {showModal && (
-        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-          <div className="modal-dialog" role="document">
-            <div className="modal-content" style={{ backgroundColor: 'black', color: 'white' }}>
-              <div className="modal-header">
-                <h5 className="modal-title" style={{ color: 'white' }}>Mensaje</h5>
-                <button type="button" className="close" style={{ backgroundColor: 'red' }} onClick={closeModal}>
-                  <span>&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">{modalMessage}</div>
-              <div className="modal-footer d-flex justify-content-center">
-                <button type="button" className="btn btn-primary" onClick={closeModal}>
-                  Intentar nuevamente
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
