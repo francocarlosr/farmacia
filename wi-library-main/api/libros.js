@@ -138,46 +138,7 @@ librosRouter.post("/",
     
   });
   
-  
 
-
-// PUT /libros/:id - Modificar una tabla por id
-librosRouter.put("/:id",
-    passport.authenticate("jwt", { session: false }),
-    param("id").isInt({ min: 1, max: 2147483647 }),
-    body('nombre').isString().isLength({ min: 1, max: 45 }),
-    body('año').isInt({ min: 1, max: 2147483647 }),
-    body('precio').isFloat({ min: 1, max: 2147483647 }),
-    body('tipo').isString().isLength({ min: 1, max: 45 }),
-    body('isbn').custom(value => {
-        const cleanedISBN = value.replace(/-|\s/g, '');
-        if (cleanedISBN.length === 10 || cleanedISBN.length === 13) {
-            return true;
-        }
-        throw new Error('El ISBN debe ser válido (ISBN-10 o ISBN-13).');
-    }),    
-    body('id_autor').isInt({ min: 1, max: 2147483647 }),
-    body('id_categoria').isInt({ min: 1, max: 2147483647 }),
-    body('id_proveedor').isInt({ min: 1, max: 2147483647 }),
-    body('id_editorial').isInt({ min: 1, max: 2147483647 }),
-
-    async (req, res) => {
-        const validacion = validationResult(req);
-        if (!validacion.isEmpty()) {
-            res.status(400).send({ errors: validacion.errors })
-            return
-        }
-        
-        const { id } = req.params;
-        const { nombre, año, tipo, isbn, precio, id_autor, id_categoria, id_proveedor, id_editorial } = req.body;
-        
-        await db.execute(
-            "UPDATE libros SET nombre = ?, año= ?, tipo = ?, isbn = ?, fecha_modificacion = NOW(), precio=?, id_autor=?, id_categoria=?,id_proveedor=?, id_editorial=? WHERE id_libro = ?",
-            [nombre, año, tipo, isbn, precio, id_autor, id_categoria, id_proveedor, id_editorial, id]
-        );
-        
-        res.send("Registro actualizado correctamente");
-    });
 
 
 // DELETE /libros/:id - Quitar una tabla por id
