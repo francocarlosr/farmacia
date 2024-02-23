@@ -2,11 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
-import { autoresRouter } from "./autores.js";
-import { categoriaRouter } from "./categorias.js";
 import { personasRouter } from "./personas.js";
-import { editorialRouter } from "./editoriales.js";
-import { proveedoresRouter } from "./proveedores.js"
 import { usuariosRouter } from "./usuarios.js";
 import { librosRouter } from "./libros.js";
 import { rolesRouter } from "./roles.js";
@@ -21,11 +17,7 @@ app.use(cors());
 authConfig();
 
 app.use("/auth", authRouter);
-app.use("/autores", autoresRouter);
-app.use("/editorial", editorialRouter);
-app.use("/categorias", categoriaRouter);
 app.use("/personas", personasRouter);
-app.use("/proveedores", proveedoresRouter);
 app.use("/libros", librosRouter);
 app.use("/usuarios", usuariosRouter);
 app.use("/roles", rolesRouter);
